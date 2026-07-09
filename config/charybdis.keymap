@@ -11,16 +11,17 @@
 
 / {
     behaviors {
-        AS: AS {
-            compatible = "zmk,behavior-hold-tap";
-            label = "AS";
-            bindings = <&kp>, <&kp>;
+    AS: auto_shift {
+        compatible = "zmk,behavior-hold-tap";
+        label = "AS";
+        #binding-cells = <2>;
+        bindings = <&kp>, <&kp>;
 
-            #binding-cells = <2>;
-            tapping-term-ms = <200>;
-            flavor = "tap-preferred";
-        };
+        tapping-term-ms = <200>;
+        quick-tap-ms = <0>;
+        flavor = "tap-preferred";
     };
+};
 
     keymap {
         compatible = "zmk,keymap";
@@ -32,7 +33,7 @@
 &kp LEFT_ALT     &AS LS(A) A               &AS LS(S) S           &AS LS(D) D        &AS LS(F) F          &AS LS(G) G       &AS LS(H) H                &AS LS(J) J             &AS LS(K) K          &AS LS(L) L              &AS SEMI COLON            &AS DOUBLE_QUOTES SQT
 &kp LEFT_SHIFT   &AS LS(Z) Z               &AS LS(X) X           &AS LS(C) C        &AS LS(V) V          &AS LS(B) B       &AS LS(N) N                &AS LS(M) M             &AS LESS_THAN COMMA  &AS GREATER_THAN PERIOD  &AS QUESTION SLASH        &AS RGUI LGUI
                                                                  &mkp MB1           &kp DEL              &mo 1             &mo 2                      &kp BACKSPACE
-                                                                                    &mkp MB2             &kp SPACE         &AS LS(KP_ENTER) KP_ENTER
+                                                                                    &mkp MB2             &kp SPACE         &kp KP_ENTER
             >;
 
             trackball-bindings = <&tmv_coarse>;
@@ -54,7 +55,7 @@
         layer_2 {
             bindings = <
 &kp TAB  &trans  &trans  &trans  &trans  &trans     &kp SLASH  &trans     &trans    &AS LS(LEFT_BRACKET) LEFT_BRACKET  &AS LS(RBKT) RBKT  &AS PLUS EQUAL
-&trans   &trans  &trans  &trans  &trans  &trans     &kp ASTRK  &kp PSCRN  &kp SLCK  &kp PAUSE_BREAK                    &trans             &kp RCTRL
+&trans   &trans  &trans  &trans  &trans  &trans     &kp ASTERISK  &kp PSCRN  &kp SLCK  &kp PAUSE_BREAK                    &trans             &kp RCTRL
 &trans   &trans  &trans  &trans  &trans  &trans     &kp MINUS  &kp INS    &kp HOME  &kp PG_UP                          &trans             &kp RIGHT_ALT
 &trans   &trans  &trans  &trans  &trans  &trans     &kp PLUS   &kp DEL    &kp END   &kp PG_DN                          &trans             &kp RIGHT_SHIFT
                          &trans  &trans  &kp ESC    &trans     &trans
