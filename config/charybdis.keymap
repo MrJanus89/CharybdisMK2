@@ -1,8 +1,7 @@
 #include <dt-bindings/zmk/mouse.h>
 #include <behaviors.dtsi>
-#include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
-#include <dt-bindings/zmk/rgb.h>
+#include <dt-bindings/zmk/pointing.h>
 
 &lt {
     tapping-term-ms = <200>;
@@ -11,17 +10,28 @@
 };
 
 / {
+    behaviors {
+        AS: AS {
+            compatible = "zmk,behavior-hold-tap";
+            label = "AS";
+            bindings = <&kp>, <&kp>;
+
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
         layer_0 {
             bindings = <
-&kp ESC         &kp N1  &kp N2  &kp N3        &kp N4     &kp N5      &kp N6     &kp N7     &kp N8     &kp N9      &kp N0    &kp BACKSPACE
-&kp TAB         &kp Q   &kp W   &kp E         &kp R      &kp T       &kp Y      &kp U      &kp I      &kp O       &kp P     &kp BSLH
-&kp LEFT_SHIFT  &kp A   &kp S   &kp D         &kp F      &kp G       &kp H      &kp J      &kp K      &kp L       &kp SEMI  &kp SQT
-&kp LCTRL       &kp Z   &kp X   &kp C         &kp V      &kp B       &kp N      &kp M      &kp COMMA  &kp PERIOD  &kp FSLH  &mo 2
-                                &kp LEFT_ALT  &kp SPACE  &mo 1       &kp LWIN   &kp ENTER
-                                              &mkp MB1   &mkp MB2    &kp GRAVE
+&AS GRAVE TILDE  &AS N1 EXCL  &AS N2 AT  &AS N3 HASH  &AS N4 DLLR  &AS N5 PERCENT    &AS N6 CARET         &AS N7 AMPS    &AS N8 ASTRK  &AS N9 LPAR  &AS N0 RPAR  &AS MINUS UNDER
+&kp LCTRL        &kp Q        &kp W      &kp E        &kp R        &kp T             &kp Y                &kp U          &kp I         &kp O        &kp P        &kp BSLH
+&kp LEFT_ALT     &kp A        &kp S      &kp D        &kp F        &kp G             &kp H                &kp J          &kp K         &kp L        &kp SEMI     &kp SQT
+&kp LEFT_SHIFT   &kp Z        &kp X      &kp C        &kp V        &kp B             &kp N                &kp M          &kp COMMA     &kp PERIOD   &kp FSLH     &AS LEFT_GUI RIGHT_GUI
+                                         &mkp MB1     &kp DEL      &mo 1             &mo 2                &kp BACKSPACE
+                                                      &mkp MB2     &kp SPACE         &AS KP_ENTER RETURN
             >;
 
             trackball-bindings = <&tmv_coarse>;
@@ -29,12 +39,12 @@
 
         layer_1 {
             bindings = <
-&kp F1    &kp F2           &kp F3           &kp F4           &kp F5           &kp F6        &kp F7          &kp F8    &kp F9      &kp F10            &kp F11  &kp F12
-&kp CAPS  &trans           &trans           &trans           &trans           &bt BT_NXT    &trans          &trans    &kp UP      &trans             &trans   &trans
-&trans    &trans           &trans           &trans           &trans           &bt BT_CLR    &trans          &kp LEFT  &kp DOWN    &kp RIGHT          &trans   &trans
-&trans    &rgb_ug RGB_BRD  &rgb_ug RGB_BRI  &rgb_ug RGB_EFF  &rgb_ug RGB_TOG  &trans        &trans          &trans    &kp PERIOD  &kp RIGHT_BRACKET  &trans   &kp EQUAL
-                                            &trans           &trans           &trans        &trans          &trans
-                                                             &trans           &trans        &kp ENTER
+&kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &kp F6    &kp F7   &kp F8    &kp F9    &kp F10    &kp F11  &kp F12
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &kp UP    &trans     &trans   &kp RCTRL
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &kp LEFT  &kp DOWN  &kp RIGHT  &trans   &kp RIGHT_ALT
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &trans    &trans     &trans   &kp RIGHT_SHIFT
+                        &trans  &trans  &trans    &kp ESC  &trans
+                                &trans  &trans    &trans
             >;
 
             trackball-bindings = <&tsl>;
@@ -42,12 +52,12 @@
 
         layer_2 {
             bindings = <
-&trans  &trans            &trans             &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &kp MINUS         &kp EQUAL          &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans            &trans             &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
-                                             &trans  &trans  &trans    &trans  &trans
-                                                     &trans  &trans    &trans
+&kp TAB  &trans  &trans  &trans  &trans  &trans        &kp SLASH  &trans  &trans     &AS LEFT_BRACKET LEFT_BRACE  &AS RIGHT_BRACKET RIGHT_BRACE  &AS EQUAL PLUS
+&trans   &trans  &trans  &trans  &trans  &trans        &kp ASTRK  &trans  &kp PSCRN  &kp SCROLLLOCK               &kp PAUSE_BREAK                &kp RCTRL
+&trans   &trans  &trans  &trans  &trans  &trans        &kp MINUS  &trans  &kp INS    &kp HOME                     &kp PG_UP                      &kp RIGHT_ALT
+&trans   &trans  &trans  &trans  &trans  &trans        &kp PLUS   &trans  &kp DEL    &kp END                      &kp PG_DN                      &kp RIGHT_SHIFT
+                         &trans  &trans  &kp ESCAPE    &trans     &trans
+                                 &trans  &trans        &trans
             >;
         };
 
