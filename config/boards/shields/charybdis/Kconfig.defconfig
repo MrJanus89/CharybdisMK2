@@ -13,7 +13,4 @@ if SHIELD_CHARYBDIS_LEFT || SHIELD_CHARYBDIS_RIGHT
 config ZMK_SPLIT
     default y
 
-config ZMK_BOARD_COMPAT
-    default y
-
 endif
