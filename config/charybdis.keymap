@@ -54,8 +54,8 @@
 
         layer_2 {
             bindings = <
-&kp TAB  &trans  &trans  &trans  &trans  &trans     &kp SLASH  &trans     &trans    &AS LS(LEFT_BRACKET) LEFT_BRACKET  &AS LS(RBKT) RBKT  &AS PLUS EQUAL
-&trans   &trans  &trans  &trans  &trans  &trans     &kp ASTERISK  &kp PSCRN  &kp SLCK  &kp PAUSE_BREAK                    &trans             &kp RCTRL
+&kp TAB  &trans  &trans  &trans  &trans  &trans     &kp SLASH  &trans     &trans    &AS LEFT_BRACE LEFT_BRACKET		  &AS RIGHT_BRACE RIGHT_BRACKET  &AS PLUS EQUAL
+&trans   &trans  &trans  &trans  &trans  &trans     &kp ASTERISK  &kp PSCRN  &kp SLCK  &kp PAUSE_BREAK                    &trans             		&kp RCTRL
 &trans   &trans  &trans  &trans  &trans  &trans     &kp MINUS  &kp INS    &kp HOME  &kp PG_UP                          &trans             &kp RIGHT_ALT
 &trans   &trans  &trans  &trans  &trans  &trans     &kp PLUS   &kp DEL    &kp END   &kp PG_DN                          &trans             &kp RIGHT_SHIFT
                          &trans  &trans  &kp ESC    &trans     &trans
