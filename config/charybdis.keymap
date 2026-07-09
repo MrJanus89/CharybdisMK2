@@ -18,6 +18,7 @@
 
             #binding-cells = <2>;
             tapping-term-ms = <200>;
+            flavor = "tap-preferred";
         };
     };
 
@@ -26,12 +27,12 @@
 
         layer_0 {
             bindings = <
-&AS GRAVE TILDE  &AS N1 EXCL  &AS N2 AT  &AS N3 HASH  &AS N4 DLLR  &AS N5 PERCENT    &AS N6 CARET         &AS N7 AMPS    &AS N8 ASTRK  &AS N9 LPAR  &AS N0 RPAR  &AS MINUS UNDER
-&kp LCTRL        &kp Q        &kp W      &kp E        &kp R        &kp T             &kp Y                &kp U          &kp I         &kp O        &kp P        &kp BSLH
-&kp LEFT_ALT     &kp A        &kp S      &kp D        &kp F        &kp G             &kp H                &kp J          &kp K         &kp L        &kp SEMI     &kp SQT
-&kp LEFT_SHIFT   &kp Z        &kp X      &kp C        &kp V        &kp B             &kp N                &kp M          &kp COMMA     &kp PERIOD   &kp FSLH     &AS LEFT_GUI RIGHT_GUI
-                                         &mkp MB1     &kp DEL      &mo 1             &mo 2                &kp BACKSPACE
-                                                      &mkp MB2     &kp SPACE         &AS KP_ENTER RETURN
+&AS GRAVE TILDE  &AS N1 EXCL  &AS N2 AT    &AS N3 HASH  &AS N4 DLLR  &AS N5 PERCENT    &AS N6 CARET         &AS N7 AMPS    &AS N8 ASTRK         &AS N9 LPAR              &AS N0 RPAR        &AS MINUS UNDER
+&kp LCTRL        &AS Q LS(Q)  &AS W LS(W)  &AS E LS(E)  &AS R LS(R)  &AS T LS(T)       &AS Y LS(Y)          &AS U LS(U)    &AS I LS(I)          &AS O LS(O)              &AS P LS(P)        &AS BSLH PIPE
+&kp LEFT_ALT     &AS A LS(T)  &AS S LS(S)  &AS D LS(D)  &AS F LS(F)  &AS G LS(G)       &AS H LS(H)          &AS J LS(J)    &AS K LS(K)          &AS L LS(L)              &AS SEMI COLON     &AS SQT DOUBLE_QUOTES
+&kp LEFT_SHIFT   &AS Z LS(Z)  &AS X LS(X)  &AS C LS(C)  &AS V LS(V)  &AS B LS(B)       &AS N LS(N)          &AS M LS(M)    &AS COMMA LESS_THAN  &AS PERIOD GREATER_THAN  &AS FSLH QUESTION  &AS LEFT_GUI RIGHT_GUI
+                                           &mkp MB1     &kp DEL      &mo 1             &mo 2                &kp BACKSPACE
+                                                        &mkp MB2     &kp SPACE         &AS KP_ENTER RETURN
             >;
 
             trackball-bindings = <&tmv_coarse>;
@@ -52,10 +53,10 @@
 
         layer_2 {
             bindings = <
-&kp TAB  &trans  &trans  &trans  &trans  &trans        &kp SLASH  &trans  &trans     &AS LEFT_BRACKET LEFT_BRACE  &AS RIGHT_BRACKET RIGHT_BRACE  &AS EQUAL PLUS
-&trans   &trans  &trans  &trans  &trans  &trans        &kp ASTRK  &trans  &kp PSCRN  &kp SCROLLLOCK               &kp PAUSE_BREAK                &kp RCTRL
-&trans   &trans  &trans  &trans  &trans  &trans        &kp MINUS  &trans  &kp INS    &kp HOME                     &kp PG_UP                      &kp RIGHT_ALT
-&trans   &trans  &trans  &trans  &trans  &trans        &kp PLUS   &trans  &kp DEL    &kp END                      &kp PG_DN                      &kp RIGHT_SHIFT
+&kp TAB  &trans  &trans  &trans  &trans  &trans        &kp SLASH  &trans           &trans          &AS LEFT_BRACKET LEFT_BRACE  &AS RIGHT_BRACKET RIGHT_BRACE  &AS EQUAL PLUS
+&trans   &trans  &trans  &trans  &trans  &trans        &kp ASTRK  &kp PRINTSCREEN  &kp SCROLLLOCK  &kp PAUSE_BREAK              &trans                         &kp RCTRL
+&trans   &trans  &trans  &trans  &trans  &trans        &kp MINUS  &kp INS          &kp HOME        &kp PAGE_UP                  &trans                         &kp RIGHT_ALT
+&trans   &trans  &trans  &trans  &trans  &trans        &kp PLUS   &kp DEL          &kp END         &kp PAGE_DOWN                &trans                         &kp RIGHT_SHIFT
                          &trans  &trans  &kp ESCAPE    &trans     &trans
                                  &trans  &trans        &trans
             >;
