@@ -106,12 +106,12 @@
 
         Directional {
             bindings = <
-&trans  &trans  &trans           &trans           &trans          &trans    &trans   &trans    &trans    &AS LEFT_BRACE LEFT_BRACKET  &AS RIGHT_BRACE RIGHT_BRACKET  &AS PLUS EQUAL
-&trans  &trans  &trans           &msc MOVE_Y(5)   &trans          &trans    &trans   &trans    &TD_Up    &trans                       &trans                         &trans
-&trans  &trans  &msc MOVE_X(-5)  &msc MOVE_Y(-5)  &msc MOVE_X(5)  &trans    &trans   &TD_Left  &TD_Down  &TD_Right                    &trans                         &trans
-&trans  &trans  &trans           &trans           &trans          &trans    &trans   &trans    &trans    &trans                       &trans                         &trans
-                                 &trans           &trans          &trans    &kp ESC  &trans
-                                                  &trans          &trans    &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &trans    &AS LEFT_BRACE LEFT_BRACKET  &AS RIGHT_BRACE RIGHT_BRACKET  &AS PLUS EQUAL
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &TD_Up    &trans                       &trans                         &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &TD_Left  &TD_Down  &TD_Right                    &trans                         &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &trans    &trans                       &trans                         &trans
+                        &trans  &trans  &trans    &kp ESC  &trans
+                                &trans  &trans    &trans
             >;
 
             trackball-bindings = <&tmv_fine>;
