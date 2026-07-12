@@ -106,15 +106,15 @@
 
         Directional {
             bindings = <
-&trans  &trans  &trans          &trans          &trans           &trans    &trans   &trans    &trans    &AS LEFT_BRACE LEFT_BRACKET  &AS RIGHT_BRACE RIGHT_BRACKET  &AS PLUS EQUAL
-&trans  &trans  &trans          &msc SCRL_UP    &trans           &trans    &trans   &trans    &TD_Up    &trans                       &trans                         &trans
-&trans  &trans  &msc SCRL_LEFT  &msc SCRL_DOWN  &msc SCRL_RIGHT  &trans    &trans   &TD_Left  &TD_Down  &TD_Right                    &trans                         &trans
-&trans  &trans  &trans          &trans          &trans           &trans    &trans   &trans    &trans    &trans                       &trans                         &trans
-                                &trans          &trans           &trans    &kp ESC  &trans
-                                                &trans           &trans    &trans
-            >;
+&trans  &trans  &trans              &trans              &trans               &trans  &trans  &trans    &trans    &AS LEFT_BRACE LEFT_BRACKET  &AS RIGHT_BRACE RIGHT_BRACKET  &AS PLUS EQUAL
+&trans  &trans  &trans              &msc MOVE_VERT(1)   &trans               &trans  &trans  &trans    &TD_Up    &trans                       &trans                         &trans
+&trans  &trans  &msc MOVE_HOR(-1)   &msc MOVE_VERT(-1)  &msc MOVE_HOR(1)     &trans  &trans  &TD_Left  &TD_Down  &TD_Right                    &trans                         &trans
+&trans  &trans  &trans              &trans              &trans               &trans  &trans  &trans    &trans    &trans                       &trans                         &trans
+                                &trans              &trans               &trans  &kp ESC  &trans
+                                                    &trans               &trans  &trans
+			>;
 
-            trackball-bindings = <&tsl>;
+            trackball-bindings = <&tmv_fine>;
         };
 
         NumPad {
@@ -137,7 +137,9 @@
                         &trans  &trans  &kp ESC    &kp ESC  &trans
                                 &trans  &trans     &trans
             >;
-        };
+				trackball-bindings = <&tmv_fine>;
+
+		};
 
         /* layer_2 {
             bindings = <
@@ -148,8 +150,8 @@
                                    &none         &none         &none         &none         &none
                                                  &none         &none         &none
             >;
-          trackball-bindings = <&tsl>;
-            
+				trackball-bindings = <&tmv_fine>;
+           
         };
 
        Mouse {
@@ -161,7 +163,7 @@
                                          &mo 5         &mkp LCLK  &mkp RCLK     &mkp RCLK   &mkp LCLK
                                                        &none      &trans        &trans
             >;
-
+				trackball-bindings = <&tmv_fine>;
             
         };
 
@@ -176,7 +178,8 @@
             >;
                 
                 
-                trackball-bindings = <&tsl>;
+				trackball-bindings = <&tmv_fine>;
+
         };
 
         layer_5 {
