@@ -34,20 +34,26 @@
             label = "TD_RIGHT";
             #binding-cells = <0>;
             bindings = <&kp RIGHT>, <&kp END>;
-        };
+        
+            tapping-term-ms = <150>;
+		};
 
         TD_Left: TD_Left {
             compatible = "zmk,behavior-tap-dance";
             label = "TD_LEFT";
             #binding-cells = <0>;
             bindings = <&kp LEFT>, <&kp HOME>;
-        };
+
+            tapping-term-ms = <150>;
+		};
 
         TD_Up: TD_Up {
             compatible = "zmk,behavior-tap-dance";
             label = "TD_UP";
             #binding-cells = <0>;
             bindings = <&kp UP>, <&kp PAGE_UP>;
+
+            tapping-term-ms = <150>;
         };
 
         TD_Down: TD_Down {
@@ -55,7 +61,9 @@
             label = "TD_DOWN";
             #binding-cells = <0>;
             bindings = <&kp DOWN>, <&kp PAGE_DOWN>;
-        };
+        
+            tapping-term-ms = <150>;
+		};
 
         TD_Win: TD_Win {
             compatible = "zmk,behavior-tap-dance";
@@ -105,7 +113,7 @@
 
         Directional {
             bindings = <
-&trans  &trans  &trans           &trans           &trans          &trans    &trans   &trans    &trans    &AS LEFT_BRACE LEFT_BRACKET  &AS RIGHT_BRACE RIGHT_BRACKET  &AS PLUS EQUAL
+&trans  &trans  &trans  		 &trans  		  &trans  		  &trans 	&trans   &trans    &trans	 &AS LBRC LBKT				  &AS RBRC RBKT					 &AS PLUS EQUAL
 &trans  &trans  &trans           &msc MOVE_Y(5)   &trans          &trans    &trans   &trans    &TD_Up    &trans                       &trans                         &trans
 &trans  &trans  &msc MOVE_X(-5)  &msc MOVE_Y(-5)  &msc MOVE_X(5)  &trans    &trans   &TD_Left  &TD_Down  &TD_Right                    &trans                         &trans
 &trans  &trans  &trans           &trans           &trans          &trans    &trans   &trans    &trans    &trans                       &trans                         &trans
