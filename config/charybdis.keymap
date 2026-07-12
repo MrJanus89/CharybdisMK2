@@ -34,9 +34,9 @@
             label = "TD_RIGHT";
             #binding-cells = <0>;
             bindings = <&kp RIGHT>, <&kp END>;
-        
-            tapping-term-ms = <150>;
-		};
+
+            tapping-term-ms = <180>;
+        };
 
         TD_Left: TD_Left {
             compatible = "zmk,behavior-tap-dance";
@@ -44,8 +44,8 @@
             #binding-cells = <0>;
             bindings = <&kp LEFT>, <&kp HOME>;
 
-            tapping-term-ms = <150>;
-		};
+            tapping-term-ms = <180>;
+        };
 
         TD_Up: TD_Up {
             compatible = "zmk,behavior-tap-dance";
@@ -53,7 +53,7 @@
             #binding-cells = <0>;
             bindings = <&kp UP>, <&kp PAGE_UP>;
 
-            tapping-term-ms = <150>;
+            tapping-term-ms = <180>;
         };
 
         TD_Down: TD_Down {
@@ -61,15 +61,17 @@
             label = "TD_DOWN";
             #binding-cells = <0>;
             bindings = <&kp DOWN>, <&kp PAGE_DOWN>;
-        
-            tapping-term-ms = <150>;
-		};
+
+            tapping-term-ms = <180>;
+        };
 
         TD_Win: TD_Win {
             compatible = "zmk,behavior-tap-dance";
             label = "TD_WIN";
             #binding-cells = <0>;
             bindings = <&kp LEFT_WIN>, <&kp RIGHT_WIN>;
+
+            tapping-term-ms = <180>;
         };
 
         TD_Shift_Caps: TD_Shift_Caps {
@@ -77,6 +79,8 @@
             label = "TD_SHIFT_CAPS";
             #binding-cells = <0>;
             bindings = <&kp LEFT_SHIFT>, <&kp CAPS>;
+
+            tapping-term-ms = <180>;
         };
 
         TD_Del_Ins: TD_Del_Ins {
@@ -85,7 +89,7 @@
             #binding-cells = <0>;
             bindings = <&kp DEL>, <&kp INS>;
 
-            tapping-term-ms = <150>;
+            tapping-term-ms = <180>;
         };
 
         TD_MB2_MB3: TD_MB2_MB3 {
@@ -108,18 +112,20 @@
                                                                  &TD_Shift_Caps     &AS LCTRL SPACE      &mo 1             &mo 2               &AS LS(KP_ENTER) KP_ENTER
                                                                                     &TD_Alt              &TD_Del_Ins       &lt 3 BACKSPACE
             >;
+
             trackball-bindings = <&tmv_coarse>;
         };
 
         Directional {
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans 	  &trans   &trans    &trans	 &AS LBRC LBKT  &AS RBRC RBKT	&AS PLUS EQUAL
-&trans  &trans  &trans  &trans  &trans  &trans	  &trans   &trans    &TD_Up    &trans       &trans          &trans
-&trans  &trans  &trans	&trans	&trans	&trans    &trans   &TD_Left  &TD_Down  &TD_Right    &trans          &trans
-&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &trans    &trans       &trans          &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &trans    &AS LBRC LBKT  &AS RBRC RBKT  &AS PLUS EQUAL
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &TD_Up    &trans         &trans         &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &TD_Left  &TD_Down  &TD_Right      &trans         &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &trans    &trans         &trans         &trans
                         &trans  &trans  &trans    &kp ESC  &trans
                                 &trans  &trans    &trans
             >;
+
             trackball-bindings = <&tmv_fine>;
         };
 
@@ -131,19 +137,21 @@
 &trans  &trans  &trans  &trans  &trans  &trans     &AS RIGHT_PARENTHESIS N0  &AS EXCLAMATION NUMBER_1  &AS AT_SIGN NUMBER_2   &AS HASH NUMBER_3        &kp EQUAL  &trans
                         &trans  &trans  &kp ESC    &trans                    &trans
                                 &trans  &trans     &trans
-            >;	
-			trackball-bindings = <&tmv_fine>;			
+            >;
+
+            trackball-bindings = <&tmv_fine>;
         };
 
         Function {
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans     &trans   &kp F10  &kp F11  &kp F12  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans     &trans   &kp F7   &kp F8   &kp F9   &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans     &trans   &kp F4   &kp F5   &kp F6   &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans     &trans   &kp F1   &kp F2   &kp F3   &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans  &kp F10  &kp F11  &kp F12  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans  &kp F7   &kp F8   &kp F9   &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans  &kp F4   &kp F5   &kp F6   &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans  &kp F1   &kp F2   &kp F3   &trans  &trans
                         &trans  &trans  &kp ESC    &trans  &trans
                                 &trans  &trans     &trans
             >;
+
             trackball-bindings = <&tmv_fine>;
         };
 
