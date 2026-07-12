@@ -21,30 +21,88 @@
             quick-tap-ms = <0>;
             flavor = "tap-preferred";
         };
+
+        TD_Alt: TD_Alt {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_ALT";
+            #binding-cells = <0>;
+            bindings = <&kp LEFT_ALT>, <&kp RIGHT_ALT>;
+        };
+
+        TD_Right: TD_Right {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_RIGHT";
+            #binding-cells = <0>;
+            bindings = <&kp RIGHT>, <&kp END>;
+        };
+
+        TD_Left: TD_Left {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_LEFT";
+            #binding-cells = <0>;
+            bindings = <&kp LEFT>, <&kp HOME>;
+        };
+
+        TD_Up: TD_Up {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_UP";
+            #binding-cells = <0>;
+            bindings = <&kp UP>, <&kp PAGE_UP>;
+        };
+
+        TD_Down: TD_Down {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_DOWN";
+            #binding-cells = <0>;
+            bindings = <&kp DOWN>, <&kp PAGE_DOWN>;
+        };
+
+        TD_Win: TD_Win {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_WIN";
+            #binding-cells = <0>;
+            bindings = <&kp LEFT_WIN>, <&kp RIGHT_WIN>;
+        };
+
+        TD_Tab_Caps: TD_Tab_Caps {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_TAB_CAPS";
+            #binding-cells = <0>;
+            bindings = <&kp TAB>, <&kp CAPS>;
+        };
+
+        TD_Del_Ins: TD_Del_Ins {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_DEL_INS";
+            #binding-cells = <0>;
+            bindings = <&kp DEL>, <&kp INS>;
+
+            tapping-term-ms = <150>;
+        };
     };
 
     keymap {
         compatible = "zmk,keymap";
 
-        layer_0 {
+        Default {
             bindings = <
-&AS TILDE GRAVE  &AS EXCLAMATION NUMBER_1  &AS AT_SIGN NUMBER_2  &AS HASH NUMBER_3  &AS DOLLAR NUMBER_4  &AS PERCENT N5    &AS CARET NUMBER_6  &AS AMPERSAND NUMBER_7  &AS ASTERISK N8      &AS LEFT_PARENTHESIS N9  &AS RIGHT_PARENTHESIS N0  &AS UNDERSCORE MINUS
-&kp LCTRL        &AS LS(Q) Q               &AS LS(W) W           &AS LS(E) E        &AS LS(R) R          &AS LS(T) T       &AS LS(Y) Y         &AS LS(U) U             &AS LS(I) I          &AS LS(O) O              &AS LS(P) P               &AS PIPE BACKSLASH
-&kp LEFT_ALT     &AS LS(A) A               &AS LS(S) S           &AS LS(D) D        &AS LS(F) F          &AS LS(G) G       &AS LS(H) H         &AS LS(J) J             &AS LS(K) K          &AS LS(L) L              &AS SEMI COLON            &AS DOUBLE_QUOTES SQT
-&kp LEFT_SHIFT   &AS LS(Z) Z               &AS LS(X) X           &AS LS(C) C        &AS LS(V) V          &AS LS(B) B       &AS LS(N) N         &AS LS(M) M             &AS LESS_THAN COMMA  &AS GREATER_THAN PERIOD  &AS QUESTION SLASH        &AS RGUI LGUI
-                                                                 &kp DEL            &kp SPACE            &mo 1             &mo 2               &kp KP_ENTER
-                                                                                    &mkp MB1             &mkp MB2          &kp BACKSPACE
+&AS TILDE GRAVE  &AS EXCLAMATION NUMBER_1  &AS AT_SIGN NUMBER_2  &AS HASH NUMBER_3  &AS DOLLAR NUMBER_4  &AS PERCENT N5    &AS CARET NUMBER_6  &AS AMPERSAND NUMBER_7     &AS ASTERISK N8      &AS LEFT_PARENTHESIS N9  &AS RIGHT_PARENTHESIS N0  &AS UNDERSCORE MINUS
+&TD_Tab_Caps     &AS LS(Q) Q               &AS LS(W) W           &AS LS(E) E        &AS LS(R) R          &AS LS(T) T       &AS LS(Y) Y         &AS LS(U) U                &AS LS(I) I          &AS LS(O) O              &AS LS(P) P               &AS PIPE BACKSLASH
+&TD_Win          &AS LS(A) A               &AS LS(S) S           &AS LS(D) D        &AS LS(F) F          &AS LS(G) G       &AS LS(H) H         &AS LS(J) J                &AS LS(K) K          &AS LS(L) L              &AS SEMI COLON            &AS DOUBLE_QUOTES SQT
+&mkp MB1         &AS LS(Z) Z               &AS LS(X) X           &AS LS(C) C        &AS LS(V) V          &AS LS(B) B       &AS LS(N) N         &AS LS(M) M                &AS LESS_THAN COMMA  &AS GREATER_THAN PERIOD  &AS QUESTION SLASH        &mkp MB2
+                                                                 &kp LEFT_SHIFT     &AS LCTRL SPACE      &mo 1             &mo 2               &AS LS(KP_ENTER) KP_ENTER
+                                                                                    &TD_Alt              &lt 3 DEL         &lt 4 BACKSPACE
             >;
 
             trackball-bindings = <&tmv_coarse>;
         };
 
-        layer_1 {
+        Directional {
             bindings = <
-&kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &kp F6    &kp F7   &kp F8    &kp F9    &kp F10    &kp F11  &kp F12
-&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &kp UP    &trans     &trans   &kp RCTRL
-&trans  &trans  &trans  &trans  &trans  &trans    &trans   &kp LEFT  &kp DOWN  &kp RIGHT  &trans   &kp RIGHT_ALT
-&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &trans    &trans     &trans   &kp RIGHT_SHIFT
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &trans    &AS LEFT_BRACE LEFT_BRACKET  &AS RIGHT_BRACE RIGHT_BRACKET  &AS PLUS EQUAL
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &TD_Up    &trans                       &trans                         &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &TD_Left  &TD_Down  &TD_Right                    &trans                         &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans   &trans    &trans    &trans                       &trans                         &trans
                         &trans  &trans  &trans    &kp ESC  &trans
                                 &trans  &trans    &trans
             >;
@@ -52,14 +110,36 @@
             trackball-bindings = <&tsl>;
         };
 
-        layer_2 {
+        Function {
             bindings = <
-&kp TAB  &trans  &trans  &trans  &trans  &trans     &kp SLASH     &trans     &trans    &AS LEFT_BRACE LEFT_BRACKET  &AS RIGHT_BRACE RIGHT_BRACKET  &AS PLUS EQUAL
-&trans   &trans  &trans  &trans  &trans  &trans     &kp ASTERISK  &kp PSCRN  &kp SLCK  &kp PAUSE_BREAK              &trans                         &kp RCTRL
-&trans   &trans  &trans  &trans  &trans  &trans     &kp MINUS     &kp INS    &kp HOME  &kp PG_UP                    &trans                         &kp RIGHT_ALT
-&trans   &trans  &trans  &trans  &trans  &trans     &kp PLUS      &kp DEL    &kp END   &kp PG_DN                    &trans                         &kp RIGHT_SHIFT
-                         &trans  &trans  &kp ESC    &trans        &trans
-                                 &trans  &trans     &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans  &kp F10  &kp F11  &kp F12  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans  &kp F7   &kp F8   &kp F9   &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans  &kp F4   &kp F5   &kp F6   &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans  &kp F1   &kp F2   &kp F3   &trans  &trans
+                        &trans  &trans  &kp ESC    &trans  &trans
+                                &trans  &trans     &trans
+            >;
+        };
+
+        NumPad {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans     &trans                    &kp PRINTSCREEN           &kp SCROLLLOCK         &kp PAUSE_BREAK          &trans     &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &kp SLASH                 &AS AMPERSAND NUMBER_7    &AS ASTERISK NUMBER_8  &AS LEFT_PARENTHESIS N9  &kp MINUS  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &kp ASTERISK              &AS DOLLAR NUMBER_4       &AS PERCENT N5         &AS CARET NUMBER_6       &kp PLUS   &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &AS RIGHT_PARENTHESIS N0  &AS EXCLAMATION NUMBER_1  &AS AT_SIGN NUMBER_2   &AS HASH NUMBER_3        &kp EQUAL  &trans
+                        &trans  &trans  &kp ESC    &kp ESC                   &trans
+                                &trans  &trans     &trans
+            >;
+        };
+
+        ShortCut {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans     &trans   &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans   &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans   &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans     &trans   &trans  &trans  &trans  &trans  &trans
+                        &trans  &trans  &kp ESC    &kp ESC  &trans
+                                &trans  &trans     &trans
             >;
         };
 
