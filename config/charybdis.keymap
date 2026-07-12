@@ -100,7 +100,6 @@
                                                                  &TD_Shift_Caps     &AS LCTRL SPACE      &mo 1             &mo 2               &AS LS(KP_ENTER) KP_ENTER
                                                                                     &TD_Alt              &TD_Del_Ins       &lt 3 BACKSPACE
             >;
-
             trackball-bindings = <&tmv_coarse>;
         };
 
@@ -113,7 +112,6 @@
                         &trans  &trans  &trans    &kp ESC  &trans
                                 &trans  &trans    &trans
             >;
-
             trackball-bindings = <&tmv_fine>;
         };
 
@@ -125,7 +123,8 @@
 &trans  &trans  &trans  &trans  &trans  &trans     &AS RIGHT_PARENTHESIS N0  &AS EXCLAMATION NUMBER_1  &AS AT_SIGN NUMBER_2   &AS HASH NUMBER_3        &kp EQUAL  &trans
                         &trans  &trans  &kp ESC    &trans                    &trans
                                 &trans  &trans     &trans
-            >;
+            >;	
+			trackball-bindings = <&tmv_fine>;			
         };
 
         Function {
@@ -137,7 +136,6 @@
                         &trans  &trans  &kp ESC    &kp ESC  &trans
                                 &trans  &trans     &trans
             >;
-
             trackball-bindings = <&tmv_fine>;
         };
 
@@ -150,8 +148,7 @@
                                    &none         &none         &none         &none         &none
                                                  &none         &none         &none
             >;
-				trackball-bindings = <&tmv_fine>;
-           
+				trackball-bindings = <&tmv_fine>;           
         };
 
        Mouse {
@@ -163,8 +160,7 @@
                                          &mo 5         &mkp LCLK  &mkp RCLK     &mkp RCLK   &mkp LCLK
                                                        &none      &trans        &trans
             >;
-				trackball-bindings = <&tmv_fine>;
-            
+				trackball-bindings = <&tmv_fine>;            
         };
 
         layer_4 {
@@ -175,11 +171,8 @@
 &trans  &trans  &mkp RCLK  &trans     &mkp LCLK  &trans       &trans     &mkp LCLK  &trans     &mkp RCLK  &trans  &trans
                            &trans     &mkp LCLK  &mkp RCLK    &mkp RCLK  &mkp LCLK
                                       &trans     &trans       &trans
-            >;
-                
-                
+            >;                               
 				trackball-bindings = <&tmv_fine>;
-
         };
 
         layer_5 {
@@ -191,8 +184,7 @@
                            &trans     &mkp LCLK  &mkp RCLK    &mkp RCLK  &mkp LCLK
                                       &trans     &trans       &trans
             >;
-                trackball-bindings = <&tmv_fine>;
-                
+                trackball-bindings = <&tmv_fine>;                
         };*/
     };
 };
