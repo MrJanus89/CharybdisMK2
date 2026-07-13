@@ -106,9 +106,9 @@
         Default {
             bindings = <
 &AS TILDE GRAVE  &AS EXCLAMATION NUMBER_1  &AS AT_SIGN NUMBER_2  &AS HASH NUMBER_3  &AS DOLLAR NUMBER_4  &AS PERCENT N5    &AS CARET NUMBER_6  &AS AMPERSAND NUMBER_7     &AS ASTERISK N8      &AS LEFT_PARENTHESIS N9  &AS RIGHT_PARENTHESIS N0  &AS UNDERSCORE MINUS
-&kp TAB          &AS LS(Q) Q               &AS LS(W) W           &AS LS(E) E        &AS LS(R) R          &AS LS(T) T       &AS LS(Y) Y         &AS LS(U) U                &AS LS(I) I          &AS LS(O) O              &AS LS(P) P               &AS PIPE BACKSLASH
-&TD_Win          &AS LS(A) A               &AS LS(S) S           &AS LS(D) D        &AS LS(F) F          &AS LS(G) G       &AS LS(H) H         &AS LS(J) J                &AS LS(K) K          &AS LS(L) L              &AS COLON SEMICOLON       &AS DOUBLE_QUOTES SQT
-&mkp MB1         &AS LS(Z) Z               &AS LS(X) X           &AS LS(C) C        &AS LS(V) V          &AS LS(B) B       &AS LS(N) N         &AS LS(M) M                &AS LESS_THAN COMMA  &AS GREATER_THAN PERIOD  &AS QUESTION SLASH        &TD_MB2_MB3
+&kp TAB          &kp Q                     &kp W                 &kp E              &kp R                &kp T             &kp Y               &kp U                      &kp I                &kp O                    &kp P                     &AS PIPE BACKSLASH
+&TD_Win          &kp A                     &AS LEFT_SHIFT S      &AS LCTRL D        &AS LEFT_ALT F       &kp G             &kp H               &AS RIGHT_ALT J            &AS RCTRL K          &AS RIGHT_SHIFT L        &AS COLON SEMICOLON       &AS DOUBLE_QUOTES SQT
+&mkp MB1         &kp Z                     &kp X                 &kp C              &kp V                &kp B             &kp N               &kp M                      &AS LESS_THAN COMMA  &AS GREATER_THAN PERIOD  &AS QUESTION SLASH        &TD_MB2_MB3
                                                                  &TD_Shift_Caps     &AS LCTRL SPACE      &mo 1             &mo 2               &AS LS(KP_ENTER) KP_ENTER
                                                                                     &TD_Alt              &TD_Del_Ins       &lt 3 BACKSPACE
             >;
