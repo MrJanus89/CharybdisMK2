@@ -34,15 +34,14 @@
                 <NRF_PSEL(SPIM_SCK, 0, 8)>,
                 <NRF_PSEL(SPIM_MOSI, 0, 17)>,
                 <NRF_PSEL(SPIM_MISO, 0, 17)>;
-
             low-power-enable;
         };
     };
 };
 
 &spi0 {
-    status = "okay";
     compatible = "nordic,nrf-spim";
+    status = "okay";
 
     pinctrl-0 = <&spi0_default>;
     pinctrl-1 = <&spi0_sleep>;
@@ -51,14 +50,16 @@
     cs-gpios = <&gpio0 20 GPIO_ACTIVE_LOW>;
 
     trackball: trackball@0 {
-        status = "okay";
         compatible = "pixart,pmw3610";
+        status = "okay";
 
         reg = <0>;
         spi-max-frequency = <2000000>;
 
-        irq-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        /* PMW3610 uses one shared SDIO line for MOSI/MISO. */
+        duplex = <2048>;
 
+        irq-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         cpi = <800>;
 
         swap-xy;
@@ -68,9 +69,10 @@
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
     };
-	
-	&trackball_listener {
-		status = "okay";
-		device = <&trackball>;
-	-};
+};
+
+/* Only the right half owns the PMW3610, so connect and enable the listener here. */
+&trackball_listener {
+    status = "okay";
+    device = <&trackball>;
 };
