@@ -68,4 +68,9 @@
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
     };
+	
+	&trackball_listener {
+		status = "okay";
+		device = <&trackball>;
+	-};
 };

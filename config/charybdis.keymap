@@ -18,11 +18,14 @@
     quick-tap-ms = <150>;
 };
 
-&trackball_listener {
-    input-processors = <
-        &zip_temp_layer MOUSE 1000
-        &zip_xy_scaler 1 1
-    >;
+	&trackball_listener {
+		status = "okay";
+		device = <&trackball>;
+
+		input-processors = <
+			&zip_xy_scaler 1 1
+		>;
+	};
 
     scroll_mode {
         layers = <DIR>;
