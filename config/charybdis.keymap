@@ -22,7 +22,7 @@
 &trackball_listener {
     /* Any normal pointer movement enables the mouse-button layer for 1 second. */
     input-processors = <
-        &zip_temp_layer MOUSE 1000
+        &zip_temp_layer MOUSE 2000
         &zip_xy_scaler 1 1
     >;
 
@@ -188,7 +188,7 @@
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
                 &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans 	&trans 		&trans 		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
 										&mo SNIPE	&mo FAST 	&trans	 	&trans &trans 
 													&trans 		&trans	  	
             >;
@@ -199,7 +199,7 @@
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
                 &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans 	&trans 		&trans 		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
 										&trans 		&trans 	 	&trans 		&trans &trans 
 													&trans 	 	&trans	 	&trans
             >;
@@ -207,10 +207,10 @@
 
         fast_layer {
             bindings = <
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
-                &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans 	&trans 		&trans 		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 		&trans 	&trans 		&trans		&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 		&trans 	&trans 		&trans		&trans
+                &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans 		&trans 	&trans 		&trans 		&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
 										&trans 		&trans 	 	&trans 		&trans &trans 
 													&trans 	 	&trans	 	&trans
             >;
