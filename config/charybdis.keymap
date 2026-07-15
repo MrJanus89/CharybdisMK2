@@ -145,7 +145,7 @@
                 &kp TAB  		&kp Q  						&kp W  				  &kp E  			&kp R  					&kp T			&kp Y  				&kp U  					&kp I  					&kp O  					&kp P  						&AS PIPE BACKSLASH
                 &TD_Win  		&kp A  						&AS LEFT_SHIFT S  	  &AS LCTRL D  		&AS LEFT_ALT F  		&kp G           &kp H  				&AS RIGHT_ALT J  		&AS RCTRL K  			&AS RIGHT_SHIFT L  		&AS COLON SEMICOLON  	&AS DOUBLE_QUOTES SQT
                 &TD_Shift_Caps	&kp Z  						&kp X  				  &kp C  			&kp V  					&kp B           &kp N  &kp M  		&AS LESS_THAN COMMA  	&AS GREATER_THAN PERIOD	&AS QUESTION SLASH  	&TD_MB2_MB3
-																				  & LCTRL		  	&kp SPACE		  		&mo DIR  		&mo NUM				&AS LS(KP_ENTER) KP_ENTER  
+																				  &kp LCTRL		  	&kp SPACE		  		&mo DIR  		&mo NUM				&AS LS(KP_ENTER) KP_ENTER  
 																									&kp LALT				&TD_Del_Ins  	&lt FUN BACKSPACE
             >;
         };
@@ -189,7 +189,7 @@
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
                 &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans 	&trans 		&trans 		&trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
-										&mo SNIFE	&mo FAST 	&trans	 	&trans &trans 
+										&mo SNIPE	&mo FAST 	&trans	 	&trans &trans 
 													&trans 		&trans	  	
             >;
         };
