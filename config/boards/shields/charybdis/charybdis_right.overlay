@@ -61,6 +61,7 @@
 
         swap-xy;
         invert-x;
+        invert-y; /* Correct reversed physical up/down direction. */
 
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_X>;
