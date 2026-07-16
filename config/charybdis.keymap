@@ -72,10 +72,10 @@
             flavor = "tap-preferred";
         };
 
-        TD_Alt: td_RAlt_RCTRL {
+        TD_RAlt_RCTRL: td_RAlt_RCTRL {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            bindings = <&kp LEFT_ALT>, <&kp RIGHT_ALT>;
+            bindings = <&kp RIGHT_ALT>, <&kp RIGHT_CTRL>;
             tapping-term-ms = <180>;
         };
 
@@ -190,7 +190,7 @@
                 &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans 	&trans 		&trans 		&trans 		&trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 &mkp MB3 	&mkp MB2	&trans		&trans
 										&mo SNIPE	&mo FAST 	&trans	 	&trans &trans 
-													&trans 		&trans	  	
+													&trans 		&trans	  	&trans
             >;
         };
 
