@@ -146,7 +146,7 @@
                 &TD_Win  		&kp A  						&AS LSHIFT S  	  	&AS LCTRL D  		&AS LALT F  			&kp G           &kp H  				&AS LALT J  			&AS LCTRL K  			&AS LSHIFT L  			&AS COLON SEMICOLON  	&AS DOUBLE_QUOTES SQT
                 &TD_Shift_Caps	&kp Z  						&kp X  				  &kp C  			&kp V  					&kp B           &kp N  &kp M  		&AS LESS_THAN COMMA  	&AS GREATER_THAN PERIOD	&AS QUESTION SLASH  	&TD_MB2_MB3
 																				  &kp LCTRL		  	&kp SPACE		  		&mo DIR  		&mo NUM				&AS LS(KP_ENTER) KP_ENTER  
-																									&td_ralt_rctrl			&TD_Del_Ins  	&lt FUN BACKSPACE
+																									&TD_RAlt_RCTRL			&TD_Del_Ins  	&lt FUN BACKSPACE
             >;
         };
 
