@@ -72,7 +72,7 @@
             flavor = "tap-preferred";
         };
 
-        TD_Alt: td_alt {
+        TD_Alt: td_RAlt_RCTRL {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             bindings = <&kp LEFT_ALT>, <&kp RIGHT_ALT>;
@@ -143,10 +143,10 @@
             bindings = <
                 &AS TILDE GRAVE	&AS EXCLAMATION NUMBER_1  	&AS AT_SIGN NUMBER_2  &AS HASH NUMBER_3 &AS DOLLAR NUMBER_4  	&AS PERCENT N5	&AS CARET NUMBER_6  &AS AMPERSAND NUMBER_7	&AS ASTERISK N8  		&AS LEFT_PARENTHESIS N9 &AS RIGHT_PARENTHESIS N0  	&AS UNDERSCORE MINUS
                 &kp TAB  		&kp Q  						&kp W  				  &kp E  			&kp R  					&kp T			&kp Y  				&kp U  					&kp I  					&kp O  					&kp P  						&AS PIPE BACKSLASH
-                &TD_Win  		&kp A  						&AS LEFT_SHIFT S  	  &AS LCTRL D  		&AS LEFT_ALT F  		&kp G           &kp H  				&AS RIGHT_ALT J  		&AS RCTRL K  			&AS RIGHT_SHIFT L  		&AS COLON SEMICOLON  	&AS DOUBLE_QUOTES SQT
+                &TD_Win  		&kp A  						&AS LEFT_SHIFT S  	  &AS LEFT_CTRL D  	&AS LEFT_ALT F  		&kp G           &kp H  				&AS LEFT_ALTALT J  		&AS LEFT_CTRL K  		&AS LEFT_SHIFT L  		&AS COLON SEMICOLON  	&AS DOUBLE_QUOTES SQT
                 &TD_Shift_Caps	&kp Z  						&kp X  				  &kp C  			&kp V  					&kp B           &kp N  &kp M  		&AS LESS_THAN COMMA  	&AS GREATER_THAN PERIOD	&AS QUESTION SLASH  	&TD_MB2_MB3
 																				  &kp LCTRL		  	&kp SPACE		  		&mo DIR  		&mo NUM				&AS LS(KP_ENTER) KP_ENTER  
-																									&kp LALT				&TD_Del_Ins  	&lt FUN BACKSPACE
+																									&td_RAlt_RCTRL			&TD_Del_Ins  	&lt FUN BACKSPACE
             >;
         };
 
@@ -185,10 +185,10 @@
 
         mouse_layer {
             bindings = <
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
-                &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans 	&trans 		&trans 		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 	&trans 		&trans 		&trans		&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 	&trans 		&trans 		&trans		&trans
+                &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans 	&trans 		&trans 		&trans 		&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 &mkp MB3 	&mkp MB2	&trans		&trans
 										&mo SNIPE	&mo FAST 	&trans	 	&trans &trans 
 													&trans 		&trans	  	
             >;
@@ -196,10 +196,10 @@
 
         snipe_layer {
             bindings = <
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans 	&trans 		&trans		&trans
-                &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans 	&trans 		&trans 		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 	&trans 		&trans 		&trans		&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 	&trans 		&trans 		&trans		&trans
+                &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans 	&trans 		&trans 		&trans 		&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 &mkp MB3 	&mkp MB2	&trans		&trans
 										&trans 		&trans 	 	&trans 		&trans &trans 
 													&trans 	 	&trans	 	&trans
             >;
@@ -207,10 +207,10 @@
 
         fast_layer {
             bindings = <
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 		&trans 	&trans 		&trans		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 		&trans 	&trans 		&trans		&trans
-                &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans 		&trans 	&trans 		&trans 		&trans
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 	&mkp MB3 	&mkp MB2	&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 	&trans 		&trans 		&trans		&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans 	&trans 		&trans 		&trans		&trans
+                &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans 	&trans 		&trans 		&trans 		&trans
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &mkp MB1 &mkp MB3 	&mkp MB2	&trans		&trans
 										&trans 		&trans 	 	&trans 		&trans &trans 
 													&trans 	 	&trans	 	&trans
             >;
