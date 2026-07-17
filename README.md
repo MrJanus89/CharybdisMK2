@@ -1,23 +1,32 @@
-# Charybdis trackball threshold v4
+# Charybdis Trackball Threshold v5
 
-This version removes `#include <input/threshold_layer.dtsi>` and declares the
-`zip_threshold_layer` devicetree node directly in `config/charybdis.keymap`.
-This avoids the DTS include-path failure shown by GitHub Actions.
+이번 버전은 모듈의 C/Kconfig 등록과 Devicetree binding 검색 경로를 각각 명시합니다.
 
-Copy these folders/files into the repository root:
+루트 `build.yaml`의 좌/우 빌드에는 다음 두 옵션이 모두 있어야 합니다.
 
-- `config/charybdis.keymap`
-- `modules/threshold_module/`
-- `build.yaml`
+```yaml
+cmake-args: -DZEPHYR_EXTRA_MODULES=../../modules/threshold_module -DDTS_ROOT=../../modules/threshold_module
+```
 
-The build command must still contain:
+- `ZEPHYR_EXTRA_MODULES`: CMakeLists.txt/Kconfig/C 소스를 빌드에 추가
+- `DTS_ROOT`: `dts/bindings` 아래 YAML 바인딩을 검색 경로에 추가
 
-`-DZEPHYR_MODULES=../../modules/threshold_module`
+저장소 구조:
 
-Configured processor:
+```text
+CharybdisMK2/
+├─ build.yaml
+├─ config/charybdis.keymap
+└─ modules/threshold_module/
+   ├─ CMakeLists.txt
+   ├─ Kconfig
+   ├─ dts/bindings/input/zmk,input-processor-threshold-layer.yaml
+   ├─ src/input_processor_threshold_layer.c
+   └─ zephyr/module.yml
+```
 
-`&zip_threshold_layer MOUSE 1200 16`
+정상 적용 시 `gen_defines.py` 로그의 `--bindings-dirs` 목록에 다음 경로가 나타나야 합니다.
 
-- layer: MOUSE
-- timeout: 1200 ms
-- movement threshold: 16 counts
+```text
+.../modules/threshold_module/dts/bindings
+```
