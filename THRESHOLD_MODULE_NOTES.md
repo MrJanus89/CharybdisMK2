@@ -1,20 +1,8 @@
-# Threshold layer module
+# Threshold layer module notes (v11)
 
-ZMK v0.3-compatible call form:
-
-```dts
-&zip_threshold_layer MOUSE 1200
-```
-
-The movement threshold is configured on the processor node:
-
-```dts
-zip_threshold_layer: zip_threshold_layer {
-    compatible = "zmk,input-processor-threshold-layer";
-    #input-processor-cells = <2>;
-    threshold = <16>;
-    status = "okay";
-};
-```
-
-The two input-processor cells are `layer` and `timeout-ms`.
+- Uses `ZMK_EXTRA_MODULES` in `build.yaml`.
+- Input processor has exactly two phandle parameters: layer and timeout-ms.
+- Movement threshold is configured with the node property `threshold = <16>;`.
+- The binding intentionally does **not** include `base.yaml`.
+  In this Zephyr/ZMK version, `base.yaml` contributes an inherited input-processor cell name,
+  which made the effective `input-processor-cells` list length 3 while `#input-processor-cells` was 2.
