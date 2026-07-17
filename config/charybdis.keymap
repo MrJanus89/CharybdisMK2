@@ -256,10 +256,10 @@
 
         num_layer {
             bindings = <
-                &trans &trans &trans &trans &trans &trans    &trans 					&kp PRINTSCREEN			 	&kp SCROLLLOCK				&kp PAUSE_BREAK			&trans 			&trans
-                &trans &trans &trans &trans &trans &trans    &kp SLASH 					&AS AMPERSAND NUMBER_7 	 	&AS ASTERISK NUMBER_8		&AS LEFT_PARENTHESIS N9 &kp MINUS		&trans
-                &trans &trans &trans &trans &trans &trans    &kp ASTERISK 				&AS DOLLAR NUMBER_4 	 	&AS PERCENT N5 				&AS CARET NUMBER_6		&AS PLUS EQUAL	&trans
-                &trans &trans &trans &trans &trans &trans    &AS RIGHT_PARENTHESIS N0	&AS EXCLAMATION NUMBER_1	&AS AT_SIGN NUMBER_2 		&AS HASH NUMBER_3		&AS TILDE GRAVE	&trans
+                &trans &trans &trans &trans &trans &trans    &trans 					&kp PRINTSCREEN			 	&kp SCROLLLOCK				&kp PAUSE_BREAK			&trans 					&trans
+                &trans &trans &trans &trans &trans &trans    &kp SLASH 					&AS AMPERSAND NUMBER_7 	 	&AS ASTERISK NUMBER_8		&AS LEFT_PARENTHESIS N9 &AS UNDERSCORE MINUS	&trans
+                &trans &trans &trans &trans &trans &trans    &kp ASTERISK 				&AS DOLLAR NUMBER_4 	 	&AS PERCENT N5 				&AS CARET NUMBER_6		&AS EQUAL PLUS 			&trans
+                &trans &trans &trans &trans &trans &trans    &AS RIGHT_PARENTHESIS N0	&AS EXCLAMATION NUMBER_1	&AS AT_SIGN NUMBER_2 		&AS HASH NUMBER_3		&AS TILDE GRAVE			&trans
 									 &trans &trans &trans	 &kp ESC		&trans 
 											&trans &trans	 &trans
             >;
