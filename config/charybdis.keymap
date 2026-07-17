@@ -118,7 +118,8 @@
             key-positions = <39 40>;
             bindings = <&kp LC(V)>;
             layers = <BASE>;
-
+		};
+		
         combo_undo {
             timeout-ms = <40>;
             require-prior-idle-ms = <125>;
