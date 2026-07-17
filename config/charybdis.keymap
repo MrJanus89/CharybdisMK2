@@ -23,22 +23,17 @@
 / {
     /omit-if-no-ref/ zip_threshold_layer: zip_threshold_layer {
         compatible = "zmk,input-processor-threshold-layer";
-        #input-processor-cells = <3>;
+        #input-processor-cells = <2>;
+        threshold = <16>;
         status = "okay";
     };
 };
 
-&zip_threshold_layer {
-    require-prior-idle-ms = <500>;
-    excluded-positions = <
-        26 27 28
-        48 49
-    >;
-};
+
 
 &trackball_listener {
     input-processors = <
-        &zip_threshold_layer MOUSE 1200 16
+        &zip_threshold_layer MOUSE 1200
         &zip_xy_scaler 1 1
     >;
 
