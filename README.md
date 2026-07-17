@@ -1,19 +1,23 @@
-# Charybdis trackball threshold v3
+# Charybdis trackball threshold v4
 
-이 ZIP은 저장소 루트에 그대로 덮어쓰기 위한 구조입니다.
+This version removes `#include <input/threshold_layer.dtsi>` and declares the
+`zip_threshold_layer` devicetree node directly in `config/charybdis.keymap`.
+This avoids the DTS include-path failure shown by GitHub Actions.
 
-필수 최종 구조:
+Copy these folders/files into the repository root:
 
-- build.yaml
-- config/charybdis.keymap
-- modules/threshold_module/zephyr/module.yml
-- modules/threshold_module/dts/input/threshold_layer.dtsi
-- modules/threshold_module/dts/bindings/input/zmk,input-processor-threshold-layer.yaml
-- modules/threshold_module/src/input_processor_threshold_layer.c
+- `config/charybdis.keymap`
+- `modules/threshold_module/`
+- `build.yaml`
 
-중요: 기존 build.yaml을 반드시 이 ZIP의 build.yaml로 교체하세요.
-GitHub Actions의 West Build 로그에 다음이 실제로 표시되어야 합니다.
+The build command must still contain:
 
--DZEPHYR_MODULES=../../modules/threshold_module
+`-DZEPHYR_MODULES=../../modules/threshold_module`
 
-표시되지 않으면 루트 build.yaml이 교체되지 않은 것입니다.
+Configured processor:
+
+`&zip_threshold_layer MOUSE 1200 16`
+
+- layer: MOUSE
+- timeout: 1200 ms
+- movement threshold: 16 counts

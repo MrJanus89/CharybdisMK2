@@ -4,7 +4,6 @@
 #include <dt-bindings/zmk/mouse.h>
 #include <dt-bindings/zmk/input_transform.h>
 #include <input/processors.dtsi>
-#include <input/threshold_layer.dtsi>
 
 #define BASE 0
 #define DIR 1
@@ -19,6 +18,14 @@
     tapping-term-ms = <200>;
     flavor = "balanced";
     quick-tap-ms = <150>;
+};
+
+/ {
+    /omit-if-no-ref/ zip_threshold_layer: zip_threshold_layer {
+        compatible = "zmk,input-processor-threshold-layer";
+        #input-processor-cells = <3>;
+        status = "okay";
+    };
 };
 
 &zip_threshold_layer {
