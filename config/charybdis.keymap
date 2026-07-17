@@ -102,6 +102,7 @@
             key-positions = <37 38>;
             bindings = <&kp LC(X)>;
             layers = <BASE>;
+		};
 		
         combo_copy {
             timeout-ms = <40>;
@@ -124,6 +125,7 @@
             key-positions = <36 37>;
             bindings = <&kp LC(Z)>;
             layers = <BASE>;
+		};
         
 		combo_redo {
             timeout-ms = <40>;
@@ -133,7 +135,6 @@
             layers = <BASE>;
         };
     };
-};
 
 	behaviors {
         AS: auto_shift {
