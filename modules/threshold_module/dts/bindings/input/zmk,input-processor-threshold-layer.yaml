@@ -11,6 +11,7 @@ properties:
     required: true
     description: Accumulated absolute X/Y movement required before enabling the layer
 
+# ZMK's common input-processor binding contributes the first cell name.
+# Define only the additional name here so the merged list length remains 2.
 input-processor-cells:
-  - layer
   - timeout-ms

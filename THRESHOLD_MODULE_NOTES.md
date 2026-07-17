@@ -1,8 +1,12 @@
-# Threshold layer module notes (v11)
+# Threshold input processor notes (v12)
 
-- Uses `ZMK_EXTRA_MODULES` in `build.yaml`.
-- Input processor has exactly two phandle parameters: layer and timeout-ms.
-- Movement threshold is configured with the node property `threshold = <16>;`.
-- The binding intentionally does **not** include `base.yaml`.
-  In this Zephyr/ZMK version, `base.yaml` contributes an inherited input-processor cell name,
-  which made the effective `input-processor-cells` list length 3 while `#input-processor-cells` was 2.
+The binding intentionally declares one local `input-processor-cells` entry.
+ZMK's common input-processor binding contributes the other entry during binding merge.
+The node still uses `#input-processor-cells = <2>` and is invoked as:
+
+```dts
+&zip_threshold_layer MOUSE 1200
+```
+
+The two numeric cells continue to reach the driver callback as `param1` (layer) and
+`param2` (timeout in milliseconds).
