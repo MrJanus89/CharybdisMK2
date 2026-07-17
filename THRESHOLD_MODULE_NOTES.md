@@ -1,9 +1,20 @@
-# Threshold module notes
+# Threshold layer module
 
-This revision targets the ZMK v0.3 input processor API.
+ZMK v0.3-compatible call form:
 
-Key changes:
-- Uses `<drivers/input_processor.h>`.
-- Uses the two input-processor parameters supported by ZMK v0.3: layer and timeout.
-- Stores the movement threshold as a devicetree node property (`threshold = <16>;`).
-- Removes the previously non-functional prior-idle and excluded-position properties.
+```dts
+&zip_threshold_layer MOUSE 1200
+```
+
+The movement threshold is configured on the processor node:
+
+```dts
+zip_threshold_layer: zip_threshold_layer {
+    compatible = "zmk,input-processor-threshold-layer";
+    #input-processor-cells = <2>;
+    threshold = <16>;
+    status = "okay";
+};
+```
+
+The two input-processor cells are `layer` and `timeout-ms`.
