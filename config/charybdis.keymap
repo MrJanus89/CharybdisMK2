@@ -237,7 +237,7 @@
                 &AS TILDE GRAVE	&AS EXCLAMATION NUMBER_1  	&AS AT_SIGN NUMBER_2  &AS HASH NUMBER_3 &AS DOLLAR NUMBER_4  	&AS PERCENT N5	&AS CARET NUMBER_6  &AS AMPERSAND NUMBER_7	&AS ASTERISK N8  		&AS LEFT_PARENTHESIS N9 &AS RIGHT_PARENTHESIS N0  	&AS UNDERSCORE MINUS
                 &tog DIR		&kp Q  						&kp W  				  &kp E  			&kp R  					&kp T			&kp Y  				&kp U  					&kp I  					&kp O  					&kp P  						&AS PIPE BACKSLASH
                 &tog NUM  		&HRM_L LWIN A				&HRM_L LSHIFT S		  &HRM_L LCTRL  D 	&HRM_L LALT   F			&kp G           &kp H  				&HRM_L LALT   J			&HRM_R LCTRL  K			&HRM_R LSHIFT L  		&AS COLON SEMICOLON  		&AS DOUBLE_QUOTES SQT
-                &TOG NOMODE		&kp Z  						&kp X  				  &kp C  			&kp V  					&kp B           &kp N  				&kp M  					&AS LESS_THAN COMMA  	&AS GREATER_THAN PERIOD	&AS QUESTION SLASH  		&kp CAPS
+                &tog NOMODE		&kp Z  						&kp X  				  &kp C  			&kp V  					&kp B           &kp N  				&kp M  					&AS LESS_THAN COMMA  	&AS GREATER_THAN PERIOD	&AS QUESTION SLASH  		&kp CAPS
 																				  &TD_RAlt_RCTRL  	&lt 2 SPACE		  		&mo DIR  		&mo FUN				&AS LS(ENTER) ENTER  
 																									&mo FUN					&TD_Del_Ins  	&kp BACKSPACE
             >;
@@ -314,7 +314,7 @@
                 &AS TILDE GRAVE	&AS EXCLAMATION NUMBER_1  	&AS AT_SIGN NUMBER_2  &AS HASH NUMBER_3 &AS DOLLAR NUMBER_4  	&AS PERCENT N5	&AS CARET NUMBER_6  &AS AMPERSAND NUMBER_7	&AS ASTERISK N8  		&AS LEFT_PARENTHESIS N9 &AS RIGHT_PARENTHESIS N0  	&AS UNDERSCORE MINUS
                 &tog DIR		&kp Q  						&kp W  				  &kp E  			&kp R  					&kp T			&kp Y  				&kp U  					&kp I  					&kp O  					&kp P  						&AS PIPE BACKSLASH
                 &tog NUM  		&kp A						&kp S		  		  &kp D 			&kp F					&kp G           &kp H  				&kp J					&kp  K					&kp L  					&AS COLON SEMICOLON  		&AS DOUBLE_QUOTES SQT
-                &TOG NOMODE		&kp Z  						&kp X  				  &kp C  			&kp V  					&kp B           &kp N  				&kp M  					&AS LESS_THAN COMMA  	&AS GREATER_THAN PERIOD	&AS QUESTION SLASH  		&kp CAPS
+                &tog NOMODE		&kp Z  						&kp X  				  &kp C  			&kp V  					&kp B           &kp N  				&kp M  					&AS LESS_THAN COMMA  	&AS GREATER_THAN PERIOD	&AS QUESTION SLASH  		&kp CAPS
 																				  &TD_RAlt_RCTRL  	&lt 3 SPACE		  		&mo DIR  		&mo FUN				&AS LS(ENTER) ENTER  
 																									&mo FUN					&TD_Del_Ins  	&kp BACKSPACE
             >;
