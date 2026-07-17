@@ -1,0 +1,6 @@
+name: zmk-feature-threshold-layer
+build:
+  cmake: .
+  kconfig: Kconfig
+  settings:
+    dts_root: .
