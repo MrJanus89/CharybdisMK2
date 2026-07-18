@@ -1,8 +1,6 @@
 #include "charybdis.dtsi"
-
-#include <zephyr/dt-bindings/gpio/gpio.h>
-#include <zephyr/dt-bindings/input/input-event-codes.h>
-#include <zephyr/dt-bindings/pinctrl/nrf-pinctrl.h>
+#include <dt-bindings/pinctrl/nrf-pinctrl.h>
+#include <dt-bindings/input/input-event-codes.h>
 
 &default_transform {
     col-offset = <6>;
@@ -10,12 +8,12 @@
 
 &kscan0 {
     col-gpios =
-        <&gpio0 2  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+        <&gpio0 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
         <&gpio0 29 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
-        <&gpio0 9  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
-        <&gpio1 0  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+        <&gpio0 9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+        <&gpio1 0 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
         <&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
-        <&gpio1 4  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+        <&gpio1 4 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
 };
 
 &pinctrl {
@@ -42,37 +40,21 @@
 &spi0 {
     compatible = "nordic,nrf-spim";
     status = "okay";
-
     pinctrl-0 = <&spi0_default>;
     pinctrl-1 = <&spi0_sleep>;
     pinctrl-names = "default", "sleep";
-
     cs-gpios = <&gpio0 20 GPIO_ACTIVE_LOW>;
 
     trackball: trackball@0 {
         compatible = "pixart,pmw3610";
         status = "okay";
-
         reg = <0>;
         spi-max-frequency = <2000000>;
-
+        duplex = <2048>;
         irq-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-        cpi = <800>;
-
-        swap-xy;
-        invert-x;
-        invert-y; /* Correct reversed physical up/down direction. */
-
-        evt-type = <INPUT_EV_REL>;
-        x-input-code = <INPUT_REL_X>;
-        y-input-code = <INPUT_REL_Y>;
-
-        force-awake;
-        force-awake-4ms-mode;
-    };
+};
 };
 
-/* The PMW3610 exists only on the right half. */
 &trackball_listener {
     status = "okay";
     device = <&trackball>;
