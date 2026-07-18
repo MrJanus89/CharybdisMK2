@@ -22,7 +22,7 @@
         track-remainders;
 
         /* Minimum accumulated pointer movement before activation. */
-        threshold = <512>;
+        threshold = <1024>;
 
         /* Trackball movement must continue for this duration. */
         activation-delay-ms = <100>;
