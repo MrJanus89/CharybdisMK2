@@ -1,0 +1,12 @@
+description: ZMK pointer movement threshold temporary-layer input processor
+compatible: "zmk,input-processor-threshold-layer"
+
+properties:
+  "#input-processor-cells":
+    type: int
+    const: 2
+
+  threshold:
+    type: int
+    required: true
+    description: Accumulated absolute X/Y movement required before enabling the layer
