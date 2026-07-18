@@ -1,8 +1,6 @@
-description: ZMK input processor that activates a layer after sustained pointer movement
+description: Activates a temporary ZMK layer after sustained relative pointer movement
 
 compatible: "zmk,input-processor-threshold-layer"
-
-include: base.yaml
 
 properties:
   "#input-processor-cells":
@@ -12,19 +10,23 @@ properties:
 
   threshold:
     type: int
-    required: true
-    description: Minimum accumulated pointer movement before activation
+    default: 16
+    description: Minimum cumulative absolute X/Y movement before activation
 
   activation-delay-ms:
     type: int
-    required: true
-    description: Continuous movement duration required before layer activation
+    default: 300
+    description: Movement must remain continuous for at least this duration
 
   movement-gap-ms:
     type: int
-    required: true
-    description: Maximum allowed gap between movement events before reset
+    default: 80
+    description: Maximum allowed gap between movement events before continuity resets
 
   track-remainders:
     type: boolean
-    description: Enable remainder tracking required by the ZMK input listener
+    description: Allow the ZMK input listener to allocate remainder tracking state
+
+input-processor-cells:
+  - param1
+  - param2
