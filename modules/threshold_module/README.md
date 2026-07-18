@@ -1,13 +1,18 @@
-# Threshold temporary-layer input processor
+# Threshold temporary layer input processor
 
-This external ZMK v0.3 module activates a temporary layer only after cumulative
-relative X/Y movement reaches a configured threshold.
+ZMK v0.3-compatible input processor that activates a configured layer only
+after accumulated X/Y movement reaches a threshold.
+
+The processor intentionally uses zero phandle parameters. Layer, timeout, and
+threshold are Devicetree properties on the processor node:
 
 ```dts
 / {
     /omit-if-no-ref/ zip_threshold_layer: zip_threshold_layer {
         compatible = "zmk,input-processor-threshold-layer";
-        #input-processor-cells = <2>;
+        #input-processor-cells = <0>;
+        layer = <MOUSE>;
+        timeout-ms = <1200>;
         movement-threshold = <16>;
         status = "okay";
     };
@@ -15,14 +20,8 @@ relative X/Y movement reaches a configured threshold.
 
 &trackball_listener {
     input-processors = <
-        &zip_threshold_layer MOUSE 1200
+        &zip_threshold_layer
         &zip_xy_scaler 1 1
     >;
 };
 ```
-
-The two phandle parameters are `layer` and `timeout-ms`. The movement threshold
-is a Devicetree property so it does not consume a third runtime parameter.
-
-
-Note: This binding intentionally does not include `input/base.yaml`, because that binding adds an extra input-processor cell. This processor accepts exactly two phandle arguments.
