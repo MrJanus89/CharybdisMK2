@@ -1,4 +1,7 @@
-description: Activates a temporary ZMK layer after sustained relative pointer movement
+description: |
+  ZMK input processor that observes relative X/Y movement and activates a
+  temporary layer after both a movement threshold and activation delay are met.
+  An incomplete movement sequence resets after movement-gap-ms of inactivity.
 
 compatible: "zmk,input-processor-threshold-layer"
 
@@ -10,22 +13,18 @@ properties:
 
   threshold:
     type: int
-    default: 16
-    description: Minimum cumulative absolute X/Y movement before activation
-
-  activation-delay-ms:
-    type: int
-    default: 300
-    description: Movement must remain continuous for at least this duration
+    default: 128
+    description: Sum of absolute relative X/Y counts required for activation
 
   movement-gap-ms:
     type: int
-    default: 80
-    description: Maximum allowed gap between movement events before continuity resets
+    default: 100
+    description: Inactivity gap that resets pending movement and delay state
 
-  track-remainders:
-    type: boolean
-    description: Allow the ZMK input listener to allocate remainder tracking state
+  activation-delay-ms:
+    type: int
+    default: 0
+    description: Continuous movement-sequence duration required before activation
 
 input-processor-cells:
   - param1
