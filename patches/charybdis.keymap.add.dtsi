@@ -1,0 +1,43 @@
+/*
+ * Add once near the include section:
+ *
+ * #include <input/processors.dtsi>
+ *
+ * Existing layer number:
+ * #define MOUSE 4
+ */
+
+/ {
+    zip_threshold_layer: zip_threshold_layer {
+        compatible = "zmk,input-processor-threshold-layer";
+        #input-processor-cells = <2>;
+
+        /* Also require a small amount of real movement. */
+        threshold = <16>;
+
+        /*
+         * Movement must remain continuous for 300 ms.
+         * Increase to 500 for a slower, more deliberate activation.
+         */
+        activation-delay-ms = <300>;
+
+        /*
+         * A gap longer than 80 ms resets the 300 ms timer.
+         * Increase to 120-150 if slow movement resets too easily.
+         */
+        movement-gap-ms = <80>;
+    };
+};
+
+/*
+ * Replace the existing top-level &zip_temp_layer line.
+ *
+ * MOUSE  = layer to activate
+ * 5000   = deactivate 5 seconds after the final movement
+ */
+&trackball_listener {
+    input-processors = <
+        &zip_threshold_layer MOUSE 5000
+        &zip_xy_scaler 1 1
+    >;
+};
