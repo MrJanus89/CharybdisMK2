@@ -21,11 +21,12 @@
 };
 
 / {
-    /omit-if-no-ref/ zip_threshold_layer: zip_threshold_layer {
-        compatible = "zmk,input-processor-threshold-layer";
-        #input-processor-cells = <3>;
-        status = "okay";
-    };
+    /omit-if-no-ref/ 
+	zip_threshold_layer: zip_threshold_layer {
+		compatible = "zmk,input-processor-threshold-layer";
+		#input-processor-cells = <2>;
+		track-remainders;
+	};
 };
 
 

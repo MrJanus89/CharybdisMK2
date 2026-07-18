@@ -11,7 +11,7 @@ properties:
 
   track-remainders:
     type: boolean
-    description: Whether this processor tracks fractional input remainders
+    description: Whether this input processor tracks movement remainders
 
 input-processor-cells:
   - layer
