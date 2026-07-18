@@ -22,10 +22,10 @@
         track-remainders;
 
         /* Minimum accumulated pointer movement before activation. */
-        threshold = <24>;
+        threshold = <16>;
 
         /* Trackball movement must continue for this duration. */
-        activation-delay-ms = <800>;
+        activation-delay-ms = <300>;
 
         /* A longer event gap resets the continuous-movement timer. */
         movement-gap-ms = <100>;
@@ -40,7 +40,7 @@
 
 &trackball_listener {
     input-processors = <
-        &zip_threshold_layer MOUSE 5000
+        &zip_threshold_layer MOUSE 2000
         &zip_xy_scaler 1 1
     >;
 
