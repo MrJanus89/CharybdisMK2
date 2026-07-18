@@ -20,21 +20,23 @@
     quick-tap-ms = <150>;
 };
 
-&zip_temp_layer {
-    require-prior-idle-ms = <1500>;
-    excluded-positions = <
-        26 27 28
-        48 49
-    >;
+/ {
+    zip_threshold_layer: zip_threshold_layer {
+        compatible = "zmk,input-processor-threshold-layer";
+        #input-processor-cells = <2>;
+
+        threshold = <24>;
+        activation-delay-ms = <800>;
+        movement-gap-ms = <80>;
+    };
 };
 
 &trackball_listener {
     input-processors = <
-        &zip_temp_layer MOUSE 5000
+        &zip_threshold_layer MOUSE 5000
         &zip_xy_scaler 1 1
     >;
 
-    /* Hold DIR: convert trackball movement to vertical/horizontal scrolling. */
     scroll_mode {
         layers = <DIR>;
         input-processors = <
@@ -44,7 +46,6 @@
         >;
     };
 
-    /* Auto-enabled MOUSE layer: normal speed, approximately the configured 800 CPI. */
     mouse_mode {
         layers = <MOUSE>;
         input-processors = <
@@ -52,7 +53,6 @@
         >;
     };
 
-    /* Hold SNIPE from the MOUSE layer: half-speed, approximately 400 CPI. */
     snipe_mode {
         layers = <SNIPE>;
         input-processors = <
@@ -60,14 +60,12 @@
         >;
     };
 
-    /* Hold FAST from the MOUSE layer: double-speed, approximately 1600 CPI. */
     fast_mode {
         layers = <FAST>;
         input-processors = <
             &zip_xy_scaler 1 1
         >;
     };
-};
 
 / {
     combos {
