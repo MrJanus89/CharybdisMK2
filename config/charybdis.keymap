@@ -24,7 +24,6 @@
     /omit-if-no-ref/ zip_threshold_layer: zip_threshold_layer {
         compatible = "zmk,input-processor-threshold-layer";
         #input-processor-cells = <3>;
-        threshold = <16>;
         status = "okay";
     };
 };

@@ -9,9 +9,7 @@
 
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
 
-struct threshold_layer_config {
-    uint32_t threshold;
-};
+#define THRESHOLD_MOVEMENT_UNITS 16U
 
 struct threshold_layer_data {
     int32_t accumulated;
@@ -39,7 +37,6 @@ static int threshold_layer_handle_event(const struct device *dev,
                                         struct zmk_input_processor_state *state) {
     ARG_UNUSED(state);
 
-    const struct threshold_layer_config *cfg = dev->config;
     struct threshold_layer_data *data = dev->data;
     const uint8_t layer = (uint8_t)param1;
     const uint32_t timeout_ms = param2;
@@ -56,7 +53,7 @@ static int threshold_layer_handle_event(const struct device *dev,
 
     data->accumulated += abs(event->value);
 
-    if ((uint32_t)data->accumulated >= cfg->threshold) {
+    if ((uint32_t)data->accumulated >= THRESHOLD_MOVEMENT_UNITS) {
         data->accumulated = 0;
         data->active_layer = layer;
         zmk_keymap_layer_activate(layer);
@@ -72,16 +69,13 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
 
 #define THRESHOLD_LAYER_INST(n)                                                            \
     static struct threshold_layer_data threshold_layer_data_##n = {.active_layer = -1};   \
-    static const struct threshold_layer_config threshold_layer_config_##n = {              \
-        .threshold = DT_INST_PROP(n, threshold),                                            \
-    };                                                                                      \
     static int threshold_layer_init_##n(const struct device *dev) {                        \
         struct threshold_layer_data *data = dev->data;                                      \
         k_work_init_delayable(&data->deactivate_work, deactivate_layer);                    \
         return 0;                                                                           \
     }                                                                                       \
     DEVICE_DT_INST_DEFINE(n, threshold_layer_init_##n, NULL,                                \
-                          &threshold_layer_data_##n, &threshold_layer_config_##n,            \
+                          &threshold_layer_data_##n, NULL,            \
                           POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,                  \
                           &threshold_layer_api);
 
