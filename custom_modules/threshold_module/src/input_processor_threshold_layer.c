@@ -9,7 +9,7 @@
 
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
 
-#define THRESHOLD_MOVEMENT_UNITS 32U
+#define THRESHOLD_MOVEMENT_UNITS 256U
 
 struct threshold_layer_data {
     int32_t accumulated;
