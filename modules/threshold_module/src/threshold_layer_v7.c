@@ -1,4 +1,4 @@
-/* Movement-threshold temporary layer input processor for ZMK v0.3.x. */
+/* THRESHOLD_MODULE_V7: movement-threshold temporary layer processor for ZMK v0.3.x. */
 #include <stdlib.h>
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
