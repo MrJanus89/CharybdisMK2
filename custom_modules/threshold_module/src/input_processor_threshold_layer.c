@@ -102,7 +102,7 @@ static int threshold_layer_handle_event(const struct device *dev,
 
     /* Fast path while active: only remember the newest movement time. */
     if (data->active_layer == layer) {
-        data->last_motion_ms = now;
+        /* data->last_motion_ms = now; */
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
