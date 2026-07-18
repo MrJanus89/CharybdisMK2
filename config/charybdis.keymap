@@ -22,7 +22,7 @@
         track-remainders;
 
         /* Minimum accumulated pointer movement before activation. */
-        threshold = <128>;
+        threshold = <512>;
 
         /* Trackball movement must continue for this duration. */
         activation-delay-ms = <100>;
@@ -41,7 +41,7 @@
 &trackball_listener {
     input-processors = <
         &zip_xy_scaler 1 1
-		&zip_threshold_layer MOUSE 5000
+		&zip_threshold_layer MOUSE 3000
     >;
 
     /* Hold DIR: convert trackball movement to vertical/horizontal scrolling. */
