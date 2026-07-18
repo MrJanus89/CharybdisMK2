@@ -1,4 +1,12 @@
-/* Movement-threshold temporary layer input processor for ZMK v0.3.x. */
+/*
+ * Movement-threshold temporary layer input processor for ZMK v0.3.x.
+ *
+ * Response-oriented implementation:
+ * - Pointer events are never modified or consumed.
+ * - Active movement only updates last_motion_ms.
+ * - A delayed work item checks inactivity and reschedules itself only when needed.
+ * - No work cancellation/rescheduling occurs for every X/Y event.
+ */
 #include <stdlib.h>
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
@@ -9,19 +17,14 @@
 
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
 
-/* Total absolute X/Y movement required before enabling the layer. */
-#define THRESHOLD_MOVEMENT_UNITS 512U
-
-/*
- * Do not reschedule the timeout work for every pointer event.
- * Refreshing it at most once per this interval reduces work-queue churn.
- */
-#define TIMEOUT_REFRESH_INTERVAL_MS 50U
+/* Raw absolute X/Y movement required before the temporary layer activates. */
+#define THRESHOLD_MOVEMENT_UNITS 32U
 
 struct threshold_layer_data {
     int32_t accumulated;
     int16_t active_layer;
-    int64_t last_timeout_refresh_ms;
+    int64_t last_motion_ms;
+    uint32_t timeout_ms;
     struct k_work_delayable deactivate_work;
 };
 
@@ -30,15 +33,32 @@ static void deactivate_layer(struct k_work *work) {
     struct threshold_layer_data *data =
         CONTAINER_OF(dwork, struct threshold_layer_data, deactivate_work);
 
-    if (data->active_layer >= 0) {
-#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
-        zmk_keymap_layer_deactivate((uint8_t)data->active_layer);
-#endif
-        data->active_layer = -1;
+    if (data->active_layer < 0) {
+        data->accumulated = 0;
+        return;
     }
 
+    const int64_t now = k_uptime_get();
+    const int64_t idle_ms = now - data->last_motion_ms;
+
+    /*
+     * Movement may have occurred since this work item was originally scheduled.
+     * Do not cancel/requeue work from each input event. Instead, check the latest
+     * timestamp here and sleep only for the remaining inactivity period.
+     */
+    if (idle_ms < (int64_t)data->timeout_ms) {
+        const uint32_t remaining_ms = (uint32_t)((int64_t)data->timeout_ms - idle_ms);
+        k_work_schedule(&data->deactivate_work, K_MSEC(remaining_ms));
+        return;
+    }
+
+    const int16_t layer = data->active_layer;
+    data->active_layer = -1;
     data->accumulated = 0;
-    data->last_timeout_refresh_ms = 0;
+
+#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+    zmk_keymap_layer_deactivate((uint8_t)layer);
+#endif
 }
 
 static int threshold_layer_handle_event(const struct device *dev,
@@ -57,16 +77,14 @@ static int threshold_layer_handle_event(const struct device *dev,
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
-    if (data->active_layer == layer) {
-#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
-        const int64_t now = k_uptime_get();
+    const int64_t now = k_uptime_get();
 
-        if (data->last_timeout_refresh_ms == 0 ||
-            now - data->last_timeout_refresh_ms >= TIMEOUT_REFRESH_INTERVAL_MS) {
-            k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
-            data->last_timeout_refresh_ms = now;
-        }
-#endif
+    /*
+     * Fast path while active: record movement time only.
+     * No k_work_reschedule(), no event modification, and no event suppression.
+     */
+    if (data->active_layer == layer) {
+        data->last_motion_ms = now;
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
@@ -75,18 +93,17 @@ static int threshold_layer_handle_event(const struct device *dev,
     if ((uint32_t)data->accumulated >= THRESHOLD_MOVEMENT_UNITS) {
         data->accumulated = 0;
         data->active_layer = layer;
+        data->last_motion_ms = now;
+        data->timeout_ms = timeout_ms;
 
 #if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
         zmk_keymap_layer_activate(layer);
-        k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
-        data->last_timeout_refresh_ms = k_uptime_get();
+
+        /* One initial schedule. Further movement only updates last_motion_ms. */
+        k_work_schedule(&data->deactivate_work, K_MSEC(timeout_ms));
 #else
-        /*
-         * Split peripheral halves do not link ZMK keymap layer functions.
-         * Keep the processor buildable, but do not manipulate layers here.
-         */
+        /* Split peripherals do not link the keymap layer implementation. */
         data->active_layer = -1;
-        data->last_timeout_refresh_ms = 0;
 #endif
     }
 
@@ -100,7 +117,6 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
 #define THRESHOLD_LAYER_INST(n)                                                          \
     static struct threshold_layer_data threshold_layer_data_##n = {                     \
         .active_layer = -1,                                                              \
-        .last_timeout_refresh_ms = 0,                                                    \
     };                                                                                   \
     static int threshold_layer_init_##n(const struct device *dev) {                     \
         struct threshold_layer_data *data = dev->data;                                  \
