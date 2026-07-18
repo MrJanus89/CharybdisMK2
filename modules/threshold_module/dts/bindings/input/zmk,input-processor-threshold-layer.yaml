@@ -1,23 +1,15 @@
-description: ZMK movement-threshold temporary layer input processor
+description: ZMK pointer movement threshold temporary-layer input processor
 
 compatible: "zmk,input-processor-threshold-layer"
+
+include: base.yaml
 
 properties:
   "#input-processor-cells":
     type: int
-    const: 0
+    const: 3
 
-  layer:
-    type: int
-    required: true
-    description: Layer index to activate after the movement threshold is reached
-
-  timeout-ms:
-    type: int
-    required: true
-    description: Time in milliseconds before the temporary layer is deactivated
-
-  movement-threshold:
-    type: int
-    required: true
-    description: Accumulated absolute X/Y movement required before activation
+input-processor-cells:
+  - layer
+  - timeout-ms
+  - track-remainders

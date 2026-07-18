@@ -1,27 +1,19 @@
-# Threshold temporary layer input processor
+# Threshold layer input processor (ZMK v0.3)
 
-ZMK v0.3-compatible input processor that activates a configured layer only
-after accumulated X/Y movement reaches a threshold.
+The input processor specifier uses three cells in ZMK v0.3:
 
-The processor intentionally uses zero phandle parameters. Layer, timeout, and
-threshold are Devicetree properties on the processor node:
+1. `layer` -> callback `param1`
+2. `timeout-ms` -> callback `param2`
+3. `track-remainders` -> consumed by the input processor pipeline
+
+Usage:
 
 ```dts
-/ {
-    /omit-if-no-ref/ zip_threshold_layer: zip_threshold_layer {
-        compatible = "zmk,input-processor-threshold-layer";
-        #input-processor-cells = <0>;
-        layer = <MOUSE>;
-        timeout-ms = <1200>;
-        movement-threshold = <16>;
-        status = "okay";
-    };
-};
+&zip_threshold_layer MOUSE 1200 0
+```
 
-&trackball_listener {
-    input-processors = <
-        &zip_threshold_layer
-        &zip_xy_scaler 1 1
-    >;
-};
+The movement threshold is currently compiled into the driver as:
+
+```c
+#define THRESHOLD_MOVEMENT_UNITS 16U
 ```
