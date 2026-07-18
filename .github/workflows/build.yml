@@ -148,4 +148,3 @@ jobs:
     name: Build firmware
     needs: inspect
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
-```
