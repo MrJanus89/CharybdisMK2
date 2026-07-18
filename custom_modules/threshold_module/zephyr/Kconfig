@@ -1,3 +1,6 @@
 menuconfig ZMK_INPUT_PROCESSOR_THRESHOLD_LAYER
     bool "Threshold temporary-layer input processor"
     default y
+    help
+      Activates a temporary layer after cumulative relative pointer movement
+      reaches the configured threshold.

@@ -77,6 +77,7 @@ static int threshold_layer_handle_event(const struct device *dev,
     if ((uint32_t)data->accumulated >= config->threshold) {
         data->accumulated = 0;
         data->active_layer = layer;
+
         k_work_cancel_delayable(&data->reset_work);
         zmk_keymap_layer_activate(layer);
         k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));

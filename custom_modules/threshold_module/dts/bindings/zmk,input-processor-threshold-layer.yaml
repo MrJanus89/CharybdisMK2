@@ -1,4 +1,4 @@
-description: Activates a temporary ZMK layer after cumulative pointer movement
+description: Activates a temporary ZMK layer after cumulative relative pointer movement
 
 compatible: "zmk,input-processor-threshold-layer"
 
@@ -11,10 +11,12 @@ properties:
   threshold:
     type: int
     default: 16
+    description: Cumulative absolute X and Y movement before layer activation
 
   reset-timeout-ms:
     type: int
     default: 200
+    description: Inactivity timeout before incomplete movement accumulation resets
 
 input-processor-cells:
   - param1

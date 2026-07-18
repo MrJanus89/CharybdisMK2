@@ -1,8 +1,5 @@
 include:
   - board: nice_nano_v2
-    shield: settings_reset
-
-  - board: nice_nano_v2
     shield: charybdis_left
     cmake-args: >-
       -DZMK_EXTRA_MODULES=/__w/CharybdisMK2/CharybdisMK2/custom_modules/threshold_module
@@ -11,3 +8,6 @@ include:
     shield: charybdis_right
     cmake-args: >-
       -DZMK_EXTRA_MODULES=/__w/CharybdisMK2/CharybdisMK2/custom_modules/threshold_module
+
+  - board: nice_nano_v2
+    shield: settings_reset

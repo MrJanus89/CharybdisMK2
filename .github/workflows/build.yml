@@ -10,23 +10,57 @@ permissions:
 
 jobs:
   inspect:
+    name: Inspect repository structure
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Inspect required files
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+
+      - name: Validate required repository files
         shell: bash
         run: |
           set -euxo pipefail
+
+          echo "Branch/ref: ${GITHUB_REF}"
+          echo "Commit: ${GITHUB_SHA}"
+          git status --short --branch
+
           test -f config/west.yml
           test -f config/charybdis.keymap
           test -f config/charybdis.conf
-          test -f config/boards/shields/charybdis/Kconfig.shield
-          test -f config/boards/shields/charybdis/charybdis_left.overlay
-          test -f config/boards/shields/charybdis/charybdis_right.overlay
-          test -f custom_modules/threshold_module/zephyr/module.yml
-          find config/boards/shields/charybdis -maxdepth 1 -type f -print | sort
-          find custom_modules/threshold_module -type f -print | sort
+
+          SHIELD_DIR="config/boards/shields/charybdis"
+          test -f "$SHIELD_DIR/Kconfig.shield"
+          test -f "$SHIELD_DIR/Kconfig.defconfig"
+          test -f "$SHIELD_DIR/charybdis.dtsi"
+          test -f "$SHIELD_DIR/charybdis_left.overlay"
+          test -f "$SHIELD_DIR/charybdis_right.overlay"
+
+          MODULE_DIR="custom_modules/threshold_module"
+          test -f "$MODULE_DIR/zephyr/module.yml"
+          test -f "$MODULE_DIR/zephyr/Kconfig"
+          test -f "$MODULE_DIR/zephyr/CMakeLists.txt"
+          test -f "$MODULE_DIR/src/input_processor_threshold_layer.c"
+          test -f "$MODULE_DIR/dts/bindings/zmk,input-processor-threshold-layer.yaml"
+
+          echo "=== Shield files ==="
+          find "$SHIELD_DIR" -maxdepth 1 -type f -print | sort
+
+          echo "=== Threshold module files ==="
+          find "$MODULE_DIR" -type f -print | sort
+
+          echo "=== Build matrix ==="
+          cat build.yaml
+
+          COUNT="$(
+            grep -RIl               'compatible: "zmk,input-processor-threshold-layer"'               custom_modules/threshold_module/dts/bindings |
+            wc -l
+          )"
+          echo "Threshold binding count: $COUNT"
+          test "$COUNT" -eq 1
 
   build:
+    name: Build firmware
     needs: inspect
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
