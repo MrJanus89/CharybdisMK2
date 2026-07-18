@@ -33,7 +33,7 @@
 
 &trackball_listener {
     input-processors = <
-        &zip_threshold_layer MOUSE 1200 0
+        &zip_threshold_layer MOUSE 1200
         &zip_xy_scaler 1 1
     >;
 
