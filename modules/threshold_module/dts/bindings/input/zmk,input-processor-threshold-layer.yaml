@@ -2,8 +2,6 @@ description: ZMK pointer movement threshold temporary-layer input processor
 
 compatible: "zmk,input-processor-threshold-layer"
 
-include: base.yaml
-
 properties:
   "#input-processor-cells":
     type: int
