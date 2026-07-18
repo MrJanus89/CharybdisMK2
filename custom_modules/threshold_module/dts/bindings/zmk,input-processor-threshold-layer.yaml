@@ -26,6 +26,10 @@ properties:
     default: 0
     description: Continuous movement-sequence duration required before activation
 
+  track-remainders:
+    type: boolean
+    description: Compatibility flag accepted for existing keymaps; this observer processor does not modify pointer remainders
+
 input-processor-cells:
   - param1
   - param2
