@@ -32,7 +32,7 @@ jobs:
           echo "========================================"
           echo "THRESHOLD MODULE FILES"
           echo "========================================"
-          find modules/threshold_module -maxdepth 4 -type f -print | sort || true
+          find modules/threshold_module -maxdepth 8 -type f -print | sort || true
 
           echo
           echo "========================================"
@@ -62,6 +62,39 @@ jobs:
           echo "SOURCE SHA256"
           echo "========================================"
           sha256sum modules/threshold_module/src/input_processor_threshold_layer.c
+
+          echo
+          echo "========================================"
+          echo "THRESHOLD BINDING YAML"
+          echo "========================================"
+          if [ -f modules/threshold_module/dts/bindings/input/zmk,input-processor-threshold-layer.yaml ]; then
+            nl -ba modules/threshold_module/dts/bindings/input/zmk,input-processor-threshold-layer.yaml
+          else
+            echo "ERROR: binding YAML does not exist."
+            exit 1
+          fi
+
+          echo
+          echo "========================================"
+          echo "KEYMAP THRESHOLD REFERENCES"
+          echo "========================================"
+          grep -n -A8 -B4 "zip_threshold_layer" config/charybdis.keymap || true
+
+          echo
+          echo "========================================"
+          echo "ALL COMPATIBLE MATCHES"
+          echo "========================================"
+          grep -RIn --exclude-dir=.git \
+            'zmk,input-processor-threshold-layer' \
+            modules config || true
+
+          echo
+          echo "========================================"
+          echo "ALL INPUT PROCESSOR CELL DEFINITIONS"
+          echo "========================================"
+          grep -RIn -A6 -B3 --exclude-dir=.git \
+            'input-processor-cells' \
+            modules config || true
 
   build:
     name: Build firmware
