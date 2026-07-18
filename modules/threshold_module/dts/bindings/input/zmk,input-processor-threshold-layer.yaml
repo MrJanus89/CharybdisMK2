@@ -4,7 +4,17 @@ compatible: "zmk,input-processor-threshold-layer"
 properties:
   "#input-processor-cells":
     type: int
-    const: 2
+    const: 0
+
+  layer:
+    type: int
+    required: true
+    description: Layer index enabled after movement reaches the threshold
+
+  timeout-ms:
+    type: int
+    required: true
+    description: Time to keep the layer active after the last pointer event
 
   threshold:
     type: int
