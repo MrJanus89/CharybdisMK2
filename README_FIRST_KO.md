@@ -155,3 +155,27 @@ grep -RIn "cpi[[:space:]]*=" config/boards/shields/charybdis
 ```
 
 아무 결과도 나오지 않아야 정상입니다.
+
+
+## v8 Kconfig 수정
+
+이번 ZIP은 다음 파일도 직접 교체합니다.
+
+```text
+config/boards/shields/charybdis/charybdis_right.conf
+```
+
+제거된 미지원 옵션:
+
+```conf
+CONFIG_PMW3610_INIT_POWER_UP_EXTRA_DELAY_MS=1000
+CONFIG_PMW3610_REPORT_INTERVAL_MIN=8
+```
+
+ZIP을 저장소 루트에 덮어쓴 뒤 다음 명령으로 미지원 옵션이 사라졌는지 확인합니다.
+
+```bash
+grep -RInE "PMW3610_(INIT_POWER_UP_EXTRA_DELAY_MS|REPORT_INTERVAL_MIN)" config
+```
+
+아무 결과도 나오지 않아야 정상입니다.
