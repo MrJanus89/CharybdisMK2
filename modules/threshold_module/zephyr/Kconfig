@@ -2,3 +2,6 @@ menuconfig ZMK_INPUT_PROCESSOR_THRESHOLD_LAYER
     bool "Movement-threshold temporary layer input processor"
     default y
     depends on ZMK_POINTING
+    help
+      Enables an input processor that accumulates relative X/Y movement and
+      activates a temporary layer only after a configured threshold is reached.
