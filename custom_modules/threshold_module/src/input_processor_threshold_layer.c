@@ -9,11 +9,19 @@
 
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
 
-#define THRESHOLD_MOVEMENT_UNITS 256U
+/* Total absolute X/Y movement required before enabling the layer. */
+#define THRESHOLD_MOVEMENT_UNITS 512U
+
+/*
+ * Do not reschedule the timeout work for every pointer event.
+ * Refreshing it at most once per this interval reduces work-queue churn.
+ */
+#define TIMEOUT_REFRESH_INTERVAL_MS 50U
 
 struct threshold_layer_data {
     int32_t accumulated;
     int16_t active_layer;
+    int64_t last_timeout_refresh_ms;
     struct k_work_delayable deactivate_work;
 };
 
@@ -30,6 +38,7 @@ static void deactivate_layer(struct k_work *work) {
     }
 
     data->accumulated = 0;
+    data->last_timeout_refresh_ms = 0;
 }
 
 static int threshold_layer_handle_event(const struct device *dev,
@@ -49,7 +58,15 @@ static int threshold_layer_handle_event(const struct device *dev,
     }
 
     if (data->active_layer == layer) {
-        k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
+#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+        const int64_t now = k_uptime_get();
+
+        if (data->last_timeout_refresh_ms == 0 ||
+            now - data->last_timeout_refresh_ms >= TIMEOUT_REFRESH_INTERVAL_MS) {
+            k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
+            data->last_timeout_refresh_ms = now;
+        }
+#endif
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
@@ -58,15 +75,18 @@ static int threshold_layer_handle_event(const struct device *dev,
     if ((uint32_t)data->accumulated >= THRESHOLD_MOVEMENT_UNITS) {
         data->accumulated = 0;
         data->active_layer = layer;
+
 #if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
         zmk_keymap_layer_activate(layer);
         k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
+        data->last_timeout_refresh_ms = k_uptime_get();
 #else
         /*
          * Split peripheral halves do not link ZMK keymap layer functions.
-         * Keep the processor device buildable, but do not manipulate layers here.
+         * Keep the processor buildable, but do not manipulate layers here.
          */
         data->active_layer = -1;
+        data->last_timeout_refresh_ms = 0;
 #endif
     }
 
@@ -77,16 +97,19 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
     .handle_event = threshold_layer_handle_event,
 };
 
-#define THRESHOLD_LAYER_INST(n)                                                            \
-    static struct threshold_layer_data threshold_layer_data_##n = {.active_layer = -1};   \
-    static int threshold_layer_init_##n(const struct device *dev) {                        \
-        struct threshold_layer_data *data = dev->data;                                      \
-        k_work_init_delayable(&data->deactivate_work, deactivate_layer);                    \
-        return 0;                                                                           \
-    }                                                                                       \
-    DEVICE_DT_INST_DEFINE(n, threshold_layer_init_##n, NULL,                                \
-                          &threshold_layer_data_##n, NULL,            \
-                          POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,                  \
+#define THRESHOLD_LAYER_INST(n)                                                          \
+    static struct threshold_layer_data threshold_layer_data_##n = {                     \
+        .active_layer = -1,                                                              \
+        .last_timeout_refresh_ms = 0,                                                    \
+    };                                                                                   \
+    static int threshold_layer_init_##n(const struct device *dev) {                     \
+        struct threshold_layer_data *data = dev->data;                                  \
+        k_work_init_delayable(&data->deactivate_work, deactivate_layer);                \
+        return 0;                                                                        \
+    }                                                                                    \
+    DEVICE_DT_INST_DEFINE(n, threshold_layer_init_##n, NULL,                            \
+                          &threshold_layer_data_##n, NULL,                               \
+                          POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,              \
                           &threshold_layer_api);
 
 DT_INST_FOREACH_STATUS_OKAY(THRESHOLD_LAYER_INST)
