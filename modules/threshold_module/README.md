@@ -1,19 +1,27 @@
-# Threshold layer input processor (ZMK v0.3)
+# threshold_module
 
-The input processor specifier uses three cells in ZMK v0.3:
+Custom ZMK v0.3.x input processor for Charybdis MK2.
 
-1. `layer` -> callback `param1`
-2. `timeout-ms` -> callback `param2`
-3. `track-remainders` -> consumed by the input processor pipeline
+## Function
 
-Usage:
+1. Accumulate relative X/Y trackball movement.
+2. Activate the selected layer after `threshold` movement units.
+3. Keep the layer active for the timeout supplied in the processor reference.
+4. Reset the timeout whenever trackball movement continues.
+5. Deactivate the layer when the timeout expires.
 
-```dts
-&zip_threshold_layer MOUSE 1200 0
-```
+## Important
 
-The movement threshold is currently compiled into the driver as:
+Delete the old module folder before copying this one. Do not merge it with old files.
 
-```c
-#define THRESHOLD_MOVEMENT_UNITS 16U
-```
+Only one binding with this compatible may exist:
+
+    zmk,input-processor-threshold-layer
+
+Only one source file is included:
+
+    src/input_processor_threshold_layer.c
+
+## Build argument
+
+    -DZMK_EXTRA_MODULES=/path/to/modules/threshold_module

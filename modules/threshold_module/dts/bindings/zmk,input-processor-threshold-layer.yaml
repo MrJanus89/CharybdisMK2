@@ -1,9 +1,6 @@
-# Copyright (c) 2026
-# SPDX-License-Identifier: MIT
-
 description: |
-  Temporary layer input processor with movement threshold.
-  Activates a layer only after cumulative pointer movement exceeds a threshold.
+  ZMK input processor that activates a temporary layer only after
+  cumulative relative pointer movement reaches a threshold.
 
 compatible: "zmk,input-processor-threshold-layer"
 
@@ -13,19 +10,15 @@ properties:
     required: true
     const: 2
 
-  track-remainders:
-    type: boolean
-    description: Whether this input processor tracks movement remainders
-
   threshold:
     type: int
-    default: 15
-    description: Cumulative pointer movement required before layer activation
+    default: 16
+    description: Cumulative absolute X/Y movement required to activate the layer
 
   reset-timeout-ms:
     type: int
     default: 200
-    description: Inactivity time before accumulated movement is reset
+    description: Inactivity duration before pre-threshold accumulated movement resets
 
 input-processor-cells:
   - param1

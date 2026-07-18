@@ -1,4 +1,3 @@
-name: zmk-feature-threshold-layer
 build:
   cmake: zephyr
   kconfig: zephyr/Kconfig

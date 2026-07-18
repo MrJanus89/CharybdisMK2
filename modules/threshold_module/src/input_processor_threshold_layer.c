@@ -1,18 +1,33 @@
-/* THRESHOLD_MODULE_V10: movement-threshold temporary layer processor for ZMK v0.3.x. */
+/*
+ * ZMK threshold temporary-layer input processor.
+ *
+ * param1: target layer
+ * param2: layer timeout in milliseconds
+ */
+
 #include <stdlib.h>
+
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
-#include <zephyr/kernel.h>
 #include <zephyr/input/input.h>
+#include <zephyr/kernel.h>
+
 #include <drivers/input_processor.h>
 #include <zmk/keymap.h>
+
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
-#define THRESHOLD_MOVEMENT_UNITS 16U
+
+struct threshold_layer_config {
+    uint32_t threshold;
+    uint32_t reset_timeout_ms;
+};
 
 struct threshold_layer_data {
     int32_t accumulated;
     int16_t active_layer;
+    int64_t last_movement_at;
     struct k_work_delayable deactivate_work;
+    struct k_work_delayable reset_accumulation_work;
 };
 
 static void deactivate_layer(struct k_work *work) {
@@ -28,6 +43,16 @@ static void deactivate_layer(struct k_work *work) {
     data->accumulated = 0;
 }
 
+static void reset_accumulation(struct k_work *work) {
+    struct k_work_delayable *dwork = k_work_delayable_from_work(work);
+    struct threshold_layer_data *data =
+        CONTAINER_OF(dwork, struct threshold_layer_data, reset_accumulation_work);
+
+    if (data->active_layer < 0) {
+        data->accumulated = 0;
+    }
+}
+
 static int threshold_layer_handle_event(const struct device *dev,
                                         struct input_event *event,
                                         uint32_t param1,
@@ -36,11 +61,16 @@ static int threshold_layer_handle_event(const struct device *dev,
     ARG_UNUSED(state);
 
     struct threshold_layer_data *data = dev->data;
+    const struct threshold_layer_config *config = dev->config;
     const uint8_t layer = (uint8_t)param1;
     const uint32_t timeout_ms = param2;
 
     if (event->type != INPUT_EV_REL ||
         (event->code != INPUT_REL_X && event->code != INPUT_REL_Y)) {
+        return ZMK_INPUT_PROC_CONTINUE;
+    }
+
+    if (event->value == 0) {
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
@@ -50,10 +80,18 @@ static int threshold_layer_handle_event(const struct device *dev,
     }
 
     data->accumulated += abs(event->value);
+    data->last_movement_at = k_uptime_get();
 
-    if ((uint32_t)data->accumulated >= THRESHOLD_MOVEMENT_UNITS) {
+    if (config->reset_timeout_ms > 0) {
+        k_work_reschedule(&data->reset_accumulation_work,
+                          K_MSEC(config->reset_timeout_ms));
+    }
+
+    if ((uint32_t)data->accumulated >= config->threshold) {
         data->accumulated = 0;
         data->active_layer = layer;
+
+        k_work_cancel_delayable(&data->reset_accumulation_work);
         zmk_keymap_layer_activate(layer);
         k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
     }
@@ -65,16 +103,23 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
     .handle_event = threshold_layer_handle_event,
 };
 
-#define THRESHOLD_LAYER_INST(n)                                                            \
-    static struct threshold_layer_data threshold_layer_data_##n = {.active_layer = -1};   \
-    static int threshold_layer_init_##n(const struct device *dev) {                        \
-        struct threshold_layer_data *data = dev->data;                                      \
-        k_work_init_delayable(&data->deactivate_work, deactivate_layer);                    \
-        return 0;                                                                           \
-    }                                                                                       \
-    DEVICE_DT_INST_DEFINE(n, threshold_layer_init_##n, NULL,                                \
-                          &threshold_layer_data_##n, NULL,            \
-                          POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,                  \
+#define THRESHOLD_LAYER_INST(n)                                                   \
+    static const struct threshold_layer_config threshold_layer_config_##n = {     \
+        .threshold = DT_INST_PROP_OR(n, threshold, 16),                           \
+        .reset_timeout_ms = DT_INST_PROP_OR(n, reset_timeout_ms, 200),             \
+    };                                                                             \
+    static struct threshold_layer_data threshold_layer_data_##n = {                \
+        .active_layer = -1,                                                        \
+    };                                                                             \
+    static int threshold_layer_init_##n(const struct device *dev) {                \
+        struct threshold_layer_data *data = dev->data;                             \
+        k_work_init_delayable(&data->deactivate_work, deactivate_layer);            \
+        k_work_init_delayable(&data->reset_accumulation_work, reset_accumulation);  \
+        return 0;                                                                   \
+    }                                                                               \
+    DEVICE_DT_INST_DEFINE(n, threshold_layer_init_##n, NULL,                        \
+                          &threshold_layer_data_##n, &threshold_layer_config_##n,    \
+                          POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,          \
                           &threshold_layer_api);
 
 DT_INST_FOREACH_STATUS_OKAY(THRESHOLD_LAYER_INST)
