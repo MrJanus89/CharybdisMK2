@@ -1,10 +1,3 @@
-/*
- * Threshold temporary-layer input processor for ZMK v0.3.x.
- *
- * param1: target layer
- * param2: active timeout in milliseconds
- */
-
 #include <stdlib.h>
 
 #include <zephyr/device.h>
@@ -26,7 +19,7 @@ struct threshold_layer_data {
     int32_t accumulated;
     int16_t active_layer;
     struct k_work_delayable deactivate_work;
-    struct k_work_delayable reset_accumulation_work;
+    struct k_work_delayable reset_work;
 };
 
 static void deactivate_layer(struct k_work *work) {
@@ -45,7 +38,7 @@ static void deactivate_layer(struct k_work *work) {
 static void reset_accumulation(struct k_work *work) {
     struct k_work_delayable *dwork = k_work_delayable_from_work(work);
     struct threshold_layer_data *data =
-        CONTAINER_OF(dwork, struct threshold_layer_data, reset_accumulation_work);
+        CONTAINER_OF(dwork, struct threshold_layer_data, reset_work);
 
     if (data->active_layer < 0) {
         data->accumulated = 0;
@@ -65,11 +58,8 @@ static int threshold_layer_handle_event(const struct device *dev,
     const uint32_t timeout_ms = param2;
 
     if (event->type != INPUT_EV_REL ||
-        (event->code != INPUT_REL_X && event->code != INPUT_REL_Y)) {
-        return ZMK_INPUT_PROC_CONTINUE;
-    }
-
-    if (event->value == 0) {
+        (event->code != INPUT_REL_X && event->code != INPUT_REL_Y) ||
+        event->value == 0) {
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
@@ -81,15 +71,13 @@ static int threshold_layer_handle_event(const struct device *dev,
     data->accumulated += abs(event->value);
 
     if (config->reset_timeout_ms > 0) {
-        k_work_reschedule(&data->reset_accumulation_work,
-                          K_MSEC(config->reset_timeout_ms));
+        k_work_reschedule(&data->reset_work, K_MSEC(config->reset_timeout_ms));
     }
 
     if ((uint32_t)data->accumulated >= config->threshold) {
         data->accumulated = 0;
         data->active_layer = layer;
-
-        k_work_cancel_delayable(&data->reset_accumulation_work);
+        k_work_cancel_delayable(&data->reset_work);
         zmk_keymap_layer_activate(layer);
         k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
     }
@@ -112,7 +100,7 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
     static int threshold_layer_init_##n(const struct device *dev) {                \
         struct threshold_layer_data *data = dev->data;                             \
         k_work_init_delayable(&data->deactivate_work, deactivate_layer);            \
-        k_work_init_delayable(&data->reset_accumulation_work, reset_accumulation);  \
+        k_work_init_delayable(&data->reset_work, reset_accumulation);               \
         return 0;                                                                   \
     }                                                                               \
     DEVICE_DT_INST_DEFINE(n, threshold_layer_init_##n, NULL,                        \

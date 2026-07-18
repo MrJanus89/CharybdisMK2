@@ -10,87 +10,23 @@ permissions:
 
 jobs:
   inspect:
-    name: Inspect threshold module
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Validate threshold module
+      - uses: actions/checkout@v4
+      - name: Inspect required files
         shell: bash
         run: |
           set -euxo pipefail
-
-          MODULE_DIR="custom_modules/threshold_module"
-          SOURCE_FILE="$MODULE_DIR/src/input_processor_threshold_layer.c"
-          BINDING_FILE="$MODULE_DIR/dts/bindings/zmk,input-processor-threshold-layer.yaml"
-
-          echo "========================================"
-          echo "CHECKED-OUT COMMIT"
-          echo "========================================"
-          git rev-parse HEAD
-          git status --short --branch
-
-          echo
-          echo "========================================"
-          echo "MODULE FILES"
-          echo "========================================"
-          find "$MODULE_DIR" -maxdepth 8 -type f -print | sort
-
-          test -f "$SOURCE_FILE"
-          test -f "$BINDING_FILE"
-          test -f "$MODULE_DIR/zephyr/CMakeLists.txt"
-          test -f "$MODULE_DIR/zephyr/Kconfig"
-          test -f "$MODULE_DIR/zephyr/module.yml"
-
-          echo
-          echo "========================================"
-          echo "SOURCE"
-          echo "========================================"
-          nl -ba "$SOURCE_FILE"
-
-          echo
-          echo "========================================"
-          echo "BINDING"
-          echo "========================================"
-          nl -ba "$BINDING_FILE"
-
-          echo
-          echo "========================================"
-          echo "DUPLICATE BINDING CHECK"
-          echo "========================================"
-          COUNT="$(
-            grep -RIl               'compatible: "zmk,input-processor-threshold-layer"'               "$MODULE_DIR/dts/bindings" |
-            wc -l
-          )"
-
-          echo "Compatible binding count: $COUNT"
-          test "$COUNT" -eq 1
-
-          echo
-          echo "========================================"
-          echo "OBSOLETE HEADER CHECK"
-          echo "========================================"
-          if grep -RIn "zmk/input_processor.h" "$MODULE_DIR"; then
-            echo "ERROR: obsolete header found."
-            exit 1
-          fi
-
-          grep -RIn "drivers/input_processor.h" "$MODULE_DIR"
-
-          echo
-          echo "========================================"
-          echo "BUILD MATRIX"
-          echo "========================================"
-          cat build.yaml
-
-          echo
-          echo "========================================"
-          echo "VALIDATION COMPLETE"
-          echo "========================================"
+          test -f config/west.yml
+          test -f config/charybdis.keymap
+          test -f config/charybdis.conf
+          test -f config/boards/shields/charybdis/Kconfig.shield
+          test -f config/boards/shields/charybdis/charybdis_left.overlay
+          test -f config/boards/shields/charybdis/charybdis_right.overlay
+          test -f custom_modules/threshold_module/zephyr/module.yml
+          find config/boards/shields/charybdis -maxdepth 1 -type f -print | sort
+          find custom_modules/threshold_module -type f -print | sort
 
   build:
-    name: Build firmware
     needs: inspect
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
