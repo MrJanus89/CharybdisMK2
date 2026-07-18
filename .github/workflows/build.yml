@@ -2,23 +2,68 @@ name: Build ZMK firmware
 
 on:
   push:
-    paths:
-      - "config/**"
-      - "modules/**"
-      - "build.yaml"
-      - ".github/workflows/build.yml"
   pull_request:
-    paths:
-      - "config/**"
-      - "modules/**"
-      - "build.yaml"
-      - ".github/workflows/build.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
-
 jobs:
+  inspect:
+    name: Inspect threshold source
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Print checked-out commit and threshold source
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          echo "========================================"
+          echo "CHECKED-OUT COMMIT"
+          echo "========================================"
+          git rev-parse HEAD
+          git status --short --branch
+
+          echo
+          echo "========================================"
+          echo "THRESHOLD MODULE FILES"
+          echo "========================================"
+          find modules/threshold_module -maxdepth 4 -type f -print | sort || true
+
+          echo
+          echo "========================================"
+          echo "ACTUAL SOURCE USED FROM THIS COMMIT"
+          echo "========================================"
+          if [ -f modules/threshold_module/src/input_processor_threshold_layer.c ]; then
+            nl -ba modules/threshold_module/src/input_processor_threshold_layer.c
+          else
+            echo "ERROR: input_processor_threshold_layer.c does not exist."
+            exit 1
+          fi
+
+          echo
+          echo "========================================"
+          echo "SEARCH FOR WRONG HEADER"
+          echo "========================================"
+          grep -RIn --exclude-dir=.git "zmk/input_processor.h" . || true
+
+          echo
+          echo "========================================"
+          echo "SEARCH FOR CORRECT HEADER"
+          echo "========================================"
+          grep -RIn --exclude-dir=.git "drivers/input_processor.h" . || true
+
+          echo
+          echo "========================================"
+          echo "SOURCE SHA256"
+          echo "========================================"
+          sha256sum modules/threshold_module/src/input_processor_threshold_layer.c
+
   build:
+    name: Build firmware
+    needs: inspect
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
