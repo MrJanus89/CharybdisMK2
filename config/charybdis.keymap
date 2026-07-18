@@ -14,21 +14,27 @@
 #define FAST 6
 #define NOMODE 7
 
-&lt {
-    tapping-term-ms = <200>;
-    flavor = "balanced";
-    quick-tap-ms = <150>;
-};
 
 / {
     zip_threshold_layer: zip_threshold_layer {
         compatible = "zmk,input-processor-threshold-layer";
         #input-processor-cells = <2>;
 
+        /* Minimum accumulated pointer movement before activation. */
         threshold = <24>;
+
+        /* Trackball movement must continue for this duration. */
         activation-delay-ms = <800>;
-        movement-gap-ms = <80>;
+
+        /* A longer event gap resets the continuous-movement timer. */
+        movement-gap-ms = <100>;
     };
+};
+
+&lt {
+    tapping-term-ms = <200>;
+    flavor = "balanced";
+    quick-tap-ms = <150>;
 };
 
 &trackball_listener {
@@ -37,6 +43,7 @@
         &zip_xy_scaler 1 1
     >;
 
+    /* Hold DIR: convert trackball movement to vertical/horizontal scrolling. */
     scroll_mode {
         layers = <DIR>;
         input-processors = <
@@ -46,6 +53,7 @@
         >;
     };
 
+    /* Auto-enabled MOUSE layer: normal speed, approximately the configured 800 CPI. */
     mouse_mode {
         layers = <MOUSE>;
         input-processors = <
@@ -53,6 +61,7 @@
         >;
     };
 
+    /* Hold SNIPE from the MOUSE layer: half-speed, approximately 400 CPI. */
     snipe_mode {
         layers = <SNIPE>;
         input-processors = <
@@ -60,13 +69,16 @@
         >;
     };
 
+    /* Hold FAST from the MOUSE layer: double-speed, approximately 1600 CPI. */
     fast_mode {
         layers = <FAST>;
         input-processors = <
             &zip_xy_scaler 1 1
         >;
     };
+};
 
+/ {
     combos {
         compatible = "zmk,combos";
 
