@@ -23,3 +23,6 @@ relative X/Y movement reaches a configured threshold.
 
 The two phandle parameters are `layer` and `timeout-ms`. The movement threshold
 is a Devicetree property so it does not consume a third runtime parameter.
+
+
+Note: This binding intentionally does not include `input/base.yaml`, because that binding adds an extra input-processor cell. This processor accepts exactly two phandle arguments.
