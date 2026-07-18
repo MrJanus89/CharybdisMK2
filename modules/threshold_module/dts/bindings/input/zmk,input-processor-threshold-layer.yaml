@@ -7,9 +7,12 @@ include: base.yaml
 properties:
   "#input-processor-cells":
     type: int
-    const: 3
+    const: 2
+
+  track-remainders:
+    type: boolean
+    description: Whether this processor tracks fractional input remainders
 
 input-processor-cells:
   - layer
   - timeout-ms
-  - track-remainders
