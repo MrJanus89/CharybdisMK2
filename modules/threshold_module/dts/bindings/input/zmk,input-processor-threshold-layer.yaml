@@ -12,5 +12,4 @@ properties:
     description: Accumulated absolute X/Y movement required before enabling the layer
 
 input-processor-cells:
-  - layer
   - timeout-ms
