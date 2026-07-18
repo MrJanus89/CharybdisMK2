@@ -10,17 +10,21 @@ permissions:
 
 jobs:
   inspect:
-    name: Inspect threshold source
+    name: Inspect threshold module
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Print checked-out commit and threshold source
+      - name: Validate threshold module
         shell: bash
         run: |
           set -euxo pipefail
+
+          MODULE_DIR="custom_modules/threshold_module"
+          SOURCE_FILE="$MODULE_DIR/src/input_processor_threshold_layer.c"
+          BINDING_FILE="$MODULE_DIR/dts/bindings/zmk,input-processor-threshold-layer.yaml"
 
           echo "========================================"
           echo "CHECKED-OUT COMMIT"
@@ -30,118 +34,60 @@ jobs:
 
           echo
           echo "========================================"
-          echo "THRESHOLD MODULE FILES"
+          echo "MODULE FILES"
           echo "========================================"
-          find modules/threshold_module -maxdepth 8 -type f -print | sort
+          find "$MODULE_DIR" -maxdepth 8 -type f -print | sort
+
+          test -f "$SOURCE_FILE"
+          test -f "$BINDING_FILE"
+          test -f "$MODULE_DIR/zephyr/CMakeLists.txt"
+          test -f "$MODULE_DIR/zephyr/Kconfig"
+          test -f "$MODULE_DIR/zephyr/module.yml"
 
           echo
           echo "========================================"
-          echo "ACTUAL SOURCE USED FROM THIS COMMIT"
+          echo "SOURCE"
           echo "========================================"
-          SOURCE_FILE="modules/threshold_module/src/input_processor_threshold_layer.c"
-
-          if [ -f "$SOURCE_FILE" ]; then
-            nl -ba "$SOURCE_FILE"
-          else
-            echo "ERROR: source file does not exist: $SOURCE_FILE"
-            exit 1
-          fi
+          nl -ba "$SOURCE_FILE"
 
           echo
           echo "========================================"
-          echo "SEARCH FOR WRONG HEADER"
+          echo "BINDING"
           echo "========================================"
-          grep -RIn \
-            --exclude-dir=.git \
-            --exclude='build.yml' \
-            "zmk/input_processor.h" \
-            . || true
-
-          echo
-          echo "========================================"
-          echo "SEARCH FOR CORRECT HEADER"
-          echo "========================================"
-          grep -RIn \
-            --exclude-dir=.git \
-            --exclude='build.yml' \
-            "drivers/input_processor.h" \
-            . || true
-
-          echo
-          echo "========================================"
-          echo "SOURCE SHA256"
-          echo "========================================"
-          sha256sum "$SOURCE_FILE"
-
-          echo
-          echo "========================================"
-          echo "THRESHOLD BINDING YAML"
-          echo "========================================"
-          BINDING_FILE="modules/threshold_module/dts/bindings/zmk,input-processor-threshold-layer.yaml"
-
-          if [ -f "$BINDING_FILE" ]; then
-            nl -ba "$BINDING_FILE"
-          else
-            echo "ERROR: binding YAML does not exist: $BINDING_FILE"
-            exit 1
-          fi
-
-          echo
-          echo "========================================"
-          echo "KEYMAP THRESHOLD REFERENCES"
-          echo "========================================"
-          grep -n -A8 -B4 \
-            "zip_threshold_layer" \
-            config/charybdis.keymap || true
-
-          echo
-          echo "========================================"
-          echo "ALL COMPATIBLE MATCHES"
-          echo "========================================"
-          grep -RIn \
-            --exclude-dir=.git \
-            'zmk,input-processor-threshold-layer' \
-            modules config || true
+          nl -ba "$BINDING_FILE"
 
           echo
           echo "========================================"
           echo "DUPLICATE BINDING CHECK"
           echo "========================================"
-          BINDING_COUNT="$(
-            grep -RIl \
-              'compatible: "zmk,input-processor-threshold-layer"' \
-              modules/threshold_module/dts/bindings |
+          COUNT="$(
+            grep -RIl               'compatible: "zmk,input-processor-threshold-layer"'               "$MODULE_DIR/dts/bindings" |
             wc -l
           )"
 
-          echo "Compatible binding count: $BINDING_COUNT"
+          echo "Compatible binding count: $COUNT"
+          test "$COUNT" -eq 1
 
-          if [ "$BINDING_COUNT" -ne 1 ]; then
-            echo "ERROR: expected exactly one threshold processor binding."
-            grep -RIn \
-              'compatible: "zmk,input-processor-threshold-layer"' \
-              modules/threshold_module/dts/bindings || true
+          echo
+          echo "========================================"
+          echo "OBSOLETE HEADER CHECK"
+          echo "========================================"
+          if grep -RIn "zmk/input_processor.h" "$MODULE_DIR"; then
+            echo "ERROR: obsolete header found."
             exit 1
           fi
 
-          echo
-          echo "========================================"
-          echo "ALL INPUT PROCESSOR CELL DEFINITIONS"
-          echo "========================================"
-          grep -RIn -A6 -B3 \
-            --exclude-dir=.git \
-            'input-processor-cells' \
-            modules config || true
+          grep -RIn "drivers/input_processor.h" "$MODULE_DIR"
 
           echo
           echo "========================================"
-          echo "MODULE CMAKE SOURCES"
+          echo "BUILD MATRIX"
           echo "========================================"
-          nl -ba modules/threshold_module/zephyr/CMakeLists.txt
+          cat build.yaml
 
           echo
           echo "========================================"
-          echo "INSPECTION COMPLETE"
+          echo "VALIDATION COMPLETE"
           echo "========================================"
 
   build:

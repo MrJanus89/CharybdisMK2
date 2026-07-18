@@ -1,8 +1,8 @@
 /*
- * ZMK threshold temporary-layer input processor.
+ * Threshold temporary-layer input processor for ZMK v0.3.x.
  *
  * param1: target layer
- * param2: layer timeout in milliseconds
+ * param2: active timeout in milliseconds
  */
 
 #include <stdlib.h>
@@ -25,7 +25,6 @@ struct threshold_layer_config {
 struct threshold_layer_data {
     int32_t accumulated;
     int16_t active_layer;
-    int64_t last_movement_at;
     struct k_work_delayable deactivate_work;
     struct k_work_delayable reset_accumulation_work;
 };
@@ -80,7 +79,6 @@ static int threshold_layer_handle_event(const struct device *dev,
     }
 
     data->accumulated += abs(event->value);
-    data->last_movement_at = k_uptime_get();
 
     if (config->reset_timeout_ms > 0) {
         k_work_reschedule(&data->reset_accumulation_work,
