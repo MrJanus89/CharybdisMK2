@@ -6,9 +6,7 @@
 #include <zephyr/input/input.h>
 #include <drivers/input_processor.h>
 #include <zmk/keymap.h>
-
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
-
 #define THRESHOLD_MOVEMENT_UNITS 16U
 
 struct threshold_layer_data {
