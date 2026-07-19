@@ -1,0 +1,7 @@
+Threshold Module v10
+
+- Removed all references to last_timeout_refresh_ms.
+- Active pointer-event path only updates last_motion_ms.
+- Timeout is checked by a separate delayable work item.
+- Timeout work is not rescheduled for every pointer event.
+- Replace the repository contents with this ZIP's CharybdisMK2 folder before building.
