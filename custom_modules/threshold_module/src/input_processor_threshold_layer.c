@@ -1,15 +1,16 @@
 /*
- * Threshold + movement-gap + activation-delay temporary layer processor
- * for ZMK v0.3.x.
+ * Low-latency threshold temporary-layer input processor for ZMK v0.3.x.
  *
  * param1: target layer
- * param2: inactivity timeout while the layer is active, in milliseconds
+ * param2: inactivity timeout in milliseconds
  *
- * Design goals:
- * - Pointer events are never modified or consumed.
- * - While active, the hot path performs only an atomic timestamp write.
- * - A separate delayable work item checks inactivity at low frequency.
- * - 32-bit uptime arithmetic is wrap-safe and atomic on nRF52840.
+ * Input callback hot path:
+ *   1. accumulate movement
+ *   2. increment movement generation
+ *   3. continue the original pointer event
+ *
+ * A separate periodic worker handles movement-gap, threshold,
+ * activation-delay, layer activation, and inactivity timeout.
  */
 #include <stdint.h>
 
@@ -23,7 +24,7 @@
 #include <zmk/keymap.h>
 
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
-#define TIMEOUT_CHECK_INTERVAL_MS 100U
+#define PROCESS_INTERVAL_MS 8U
 
 struct threshold_layer_config {
     uint32_t threshold;
@@ -32,92 +33,123 @@ struct threshold_layer_config {
 };
 
 struct threshold_layer_data {
+    const struct threshold_layer_config *config;
+
+    /* Written by input callback, consumed by process_work. */
+    atomic_t pending_movement;
+    atomic_t motion_generation;
+    atomic_t requested_layer;
+    atomic_t requested_timeout_ms;
+
+    /* Owned by process_work only. */
+    uint32_t last_seen_generation;
     uint32_t accumulated;
-    uint32_t timeout_ms;
     uint32_t sequence_started_ms;
+    uint32_t last_motion_ms;
+    uint32_t timeout_ms;
+    int16_t active_layer;
 
-    /* Atomic because input callbacks and the system workqueue share these. */
-    atomic_t active_layer;
-    atomic_t last_motion_ms;
-
-    struct k_work_delayable timeout_check_work;
+    struct k_work_delayable process_work;
 };
 
-static void reset_pending_sequence(struct threshold_layer_data *data) {
-    data->accumulated = 0U;
-    data->sequence_started_ms = 0U;
-}
-
 static uint32_t movement_magnitude(int32_t value) {
-    /* Avoid signed overflow even for INT32_MIN. */
     return value < 0 ? (uint32_t)(-(int64_t)value) : (uint32_t)value;
 }
 
-/* Unsigned subtraction remains correct across the 32-bit uptime wrap. */
 static uint32_t elapsed_ms(uint32_t now, uint32_t then) {
     return now - then;
 }
 
-static uint32_t next_timeout_check_delay(uint32_t timeout_ms,
-                                         uint32_t elapsed) {
-    if (timeout_ms == 0U || elapsed >= timeout_ms) {
-        return TIMEOUT_CHECK_INTERVAL_MS;
-    }
-
-    const uint32_t remaining = timeout_ms - elapsed;
-    return remaining < TIMEOUT_CHECK_INTERVAL_MS ? remaining
-                                                 : TIMEOUT_CHECK_INTERVAL_MS;
+static void reset_sequence(struct threshold_layer_data *data) {
+    data->accumulated = 0U;
+    data->sequence_started_ms = 0U;
 }
 
-static void timeout_check_handler(struct k_work *work) {
+static void saturating_add(uint32_t *target, uint32_t value) {
+    if (UINT32_MAX - *target < value) {
+        *target = UINT32_MAX;
+    } else {
+        *target += value;
+    }
+}
+
+static void process_handler(struct k_work *work) {
     struct k_work_delayable *dwork = k_work_delayable_from_work(work);
     struct threshold_layer_data *data =
-        CONTAINER_OF(dwork, struct threshold_layer_data, timeout_check_work);
+        CONTAINER_OF(dwork, struct threshold_layer_data, process_work);
+    const struct threshold_layer_config *config = data->config;
 
-    const int32_t layer = atomic_get(&data->active_layer);
-    if (layer < 0) {
-        return;
+    const uint32_t now = k_uptime_get_32();
+    const uint32_t generation =
+        (uint32_t)atomic_get(&data->motion_generation);
+    const bool moved = generation != data->last_seen_generation;
+
+    if (moved) {
+        const uint32_t movement =
+            (uint32_t)atomic_set(&data->pending_movement, 0);
+        const uint32_t previous_motion_ms = data->last_motion_ms;
+
+        data->last_seen_generation = generation;
+        data->last_motion_ms = now;
+
+        if (data->active_layer < 0) {
+            if (previous_motion_ms == 0U ||
+                (config->movement_gap_ms > 0U &&
+                 elapsed_ms(now, previous_motion_ms) >
+                     config->movement_gap_ms)) {
+                reset_sequence(data);
+                data->sequence_started_ms = now;
+            } else if (data->sequence_started_ms == 0U) {
+                data->sequence_started_ms = now;
+            }
+
+            saturating_add(&data->accumulated, movement);
+        }
     }
 
-    const uint32_t timeout_ms = data->timeout_ms;
-    const uint32_t now = k_uptime_get_32();
-    const uint32_t last_motion = (uint32_t)atomic_get(&data->last_motion_ms);
-    const uint32_t elapsed = elapsed_ms(now, last_motion);
+    if (data->active_layer < 0 && data->sequence_started_ms != 0U) {
+        const bool threshold_met = data->accumulated >= config->threshold;
+        const bool delay_met =
+            config->activation_delay_ms == 0U ||
+            elapsed_ms(now, data->sequence_started_ms) >=
+                config->activation_delay_ms;
 
-    if (timeout_ms > 0U && elapsed >= timeout_ms) {
-        /*
-         * Re-read immediately before deactivation. If movement arrived while
-         * this work item was running, keep the layer and check again later.
-         */
-        const uint32_t newest_motion =
-            (uint32_t)atomic_get(&data->last_motion_ms);
+        if (threshold_met && delay_met) {
+            const int16_t layer =
+                (int16_t)atomic_get(&data->requested_layer);
+            const uint32_t timeout_ms =
+                (uint32_t)atomic_get(&data->requested_timeout_ms);
 
-        if (newest_motion != last_motion ||
-            elapsed_ms(k_uptime_get_32(), newest_motion) < timeout_ms) {
-            k_work_reschedule(&data->timeout_check_work,
-                              K_MSEC(TIMEOUT_CHECK_INTERVAL_MS));
-            return;
+            reset_sequence(data);
+            data->active_layer = layer;
+            data->timeout_ms = timeout_ms;
+
+#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+            zmk_keymap_layer_activate((uint8_t)layer);
+#else
+            data->active_layer = -1;
+            data->timeout_ms = 0U;
+#endif
         }
+    }
 
-        if (!atomic_cas(&data->active_layer, layer, -1)) {
-            k_work_reschedule(&data->timeout_check_work,
-                              K_MSEC(TIMEOUT_CHECK_INTERVAL_MS));
-            return;
-        }
+    if (data->active_layer >= 0 && data->timeout_ms > 0U &&
+        data->last_motion_ms != 0U &&
+        elapsed_ms(now, data->last_motion_ms) >= data->timeout_ms) {
+        const int16_t layer = data->active_layer;
 
+        data->active_layer = -1;
         data->timeout_ms = 0U;
-        atomic_set(&data->last_motion_ms, 0);
-        reset_pending_sequence(data);
+        data->last_motion_ms = 0U;
+        reset_sequence(data);
+        atomic_set(&data->pending_movement, 0);
 
 #if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
         zmk_keymap_layer_deactivate((uint8_t)layer);
 #endif
-        return;
     }
 
-    k_work_reschedule(
-        &data->timeout_check_work,
-        K_MSEC(next_timeout_check_delay(timeout_ms, elapsed)));
+    k_work_reschedule(&data->process_work, K_MSEC(PROCESS_INTERVAL_MS));
 }
 
 static int threshold_layer_handle_event(const struct device *dev,
@@ -128,9 +160,6 @@ static int threshold_layer_handle_event(const struct device *dev,
     ARG_UNUSED(state);
 
     struct threshold_layer_data *data = dev->data;
-    const struct threshold_layer_config *config = dev->config;
-    const uint8_t layer = (uint8_t)param1;
-    const uint32_t timeout_ms = param2;
 
     if (event->type != INPUT_EV_REL ||
         (event->code != INPUT_REL_X && event->code != INPUT_REL_Y) ||
@@ -138,64 +167,12 @@ static int threshold_layer_handle_event(const struct device *dev,
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
-    const uint32_t now = k_uptime_get_32();
-
-    /* Hot path while active: one atomic timestamp write, no work reschedule. */
-    if (atomic_get(&data->active_layer) == (atomic_val_t)layer) {
-        atomic_set(&data->last_motion_ms, (atomic_val_t)now);
-        return ZMK_INPUT_PROC_CONTINUE;
-    }
-
-    const uint32_t previous_motion =
-        (uint32_t)atomic_get(&data->last_motion_ms);
-
-    /* A movement gap starts a new threshold accumulation sequence. */
-    if (previous_motion == 0U ||
-        (config->movement_gap_ms > 0U &&
-         elapsed_ms(now, previous_motion) > config->movement_gap_ms)) {
-        reset_pending_sequence(data);
-        data->sequence_started_ms = now;
-    } else if (data->sequence_started_ms == 0U) {
-        data->sequence_started_ms = now;
-    }
-
-    atomic_set(&data->last_motion_ms, (atomic_val_t)now);
-
-    const uint32_t magnitude = movement_magnitude(event->value);
-    if (UINT32_MAX - data->accumulated < magnitude) {
-        data->accumulated = UINT32_MAX;
-    } else {
-        data->accumulated += magnitude;
-    }
-
-    const bool threshold_met = data->accumulated >= config->threshold;
-    const bool delay_met =
-        config->activation_delay_ms == 0U ||
-        elapsed_ms(now, data->sequence_started_ms) >= config->activation_delay_ms;
-
-    if (!threshold_met || !delay_met) {
-        return ZMK_INPUT_PROC_CONTINUE;
-    }
-
-    reset_pending_sequence(data);
-    data->timeout_ms = timeout_ms;
-    atomic_set(&data->last_motion_ms, (atomic_val_t)now);
-    atomic_set(&data->active_layer, (atomic_val_t)layer);
-
-#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
-    zmk_keymap_layer_activate(layer);
-
-    if (timeout_ms > 0U) {
-        k_work_reschedule(&data->timeout_check_work,
-                          K_MSEC(timeout_ms < TIMEOUT_CHECK_INTERVAL_MS
-                                     ? timeout_ms
-                                     : TIMEOUT_CHECK_INTERVAL_MS));
-    }
-#else
-    /* Split peripherals do not link the keymap layer implementation. */
-    atomic_set(&data->active_layer, -1);
-    data->timeout_ms = 0U;
-#endif
+    /* Keep the pointer callback independent from all layer decisions. */
+    atomic_set(&data->requested_layer, (atomic_val_t)param1);
+    atomic_set(&data->requested_timeout_ms, (atomic_val_t)param2);
+    atomic_add(&data->pending_movement,
+               (atomic_val_t)movement_magnitude(event->value));
+    atomic_inc(&data->motion_generation);
 
     return ZMK_INPUT_PROC_CONTINUE;
 }
@@ -211,12 +188,15 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
         .activation_delay_ms = DT_INST_PROP_OR(n, activation_delay_ms, 0),         \
     };                                                                              \
     static struct threshold_layer_data threshold_layer_data_##n = {                 \
-        .active_layer = ATOMIC_INIT(-1),                                            \
-        .last_motion_ms = ATOMIC_INIT(0),                                           \
+        .active_layer = -1,                                                         \
+        .requested_layer = ATOMIC_INIT(0),                                          \
+        .requested_timeout_ms = ATOMIC_INIT(0),                                     \
     };                                                                              \
     static int threshold_layer_init_##n(const struct device *dev) {                 \
         struct threshold_layer_data *data = dev->data;                              \
-        k_work_init_delayable(&data->timeout_check_work, timeout_check_handler);     \
+        data->config = dev->config;                                                  \
+        k_work_init_delayable(&data->process_work, process_handler);                 \
+        k_work_schedule(&data->process_work, K_MSEC(PROCESS_INTERVAL_MS));           \
         return 0;                                                                    \
     }                                                                                \
     DEVICE_DT_INST_DEFINE(n, threshold_layer_init_##n, NULL,                         \
