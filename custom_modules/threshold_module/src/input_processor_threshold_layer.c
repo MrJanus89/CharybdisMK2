@@ -6,6 +6,9 @@
  * param2: inactivity timeout while the layer is active, in milliseconds
  *
  * Pointer events are observed only. They are never modified or consumed.
+ * While the layer is active, pointer input only updates last_motion_ms.
+ * A low-frequency delayed work item checks the inactivity timeout separately,
+ * avoiding k_work_reschedule() on the pointer-event hot path.
  */
 #include <stdint.h>
 
@@ -18,7 +21,7 @@
 #include <zmk/keymap.h>
 
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
-#define TIMEOUT_REFRESH_INTERVAL_MS 50U
+#define TIMEOUT_CHECK_INTERVAL_MS 100U
 
 struct threshold_layer_config {
     uint32_t threshold;
@@ -28,13 +31,13 @@ struct threshold_layer_config {
 
 struct threshold_layer_data {
     uint32_t accumulated;
+    uint32_t timeout_ms;
     int16_t active_layer;
 
     int64_t sequence_started_ms;
     int64_t last_motion_ms;
-    int64_t last_timeout_refresh_ms;
 
-    struct k_work_delayable deactivate_work;
+    struct k_work_delayable timeout_check_work;
 };
 
 static void reset_pending_sequence(struct threshold_layer_data *data) {
@@ -47,24 +50,50 @@ static uint32_t movement_magnitude(int32_t value) {
     return value < 0 ? (uint32_t)(-(int64_t)value) : (uint32_t)value;
 }
 
-static void deactivate_layer(struct k_work *work) {
+static uint32_t next_timeout_check_delay(const struct threshold_layer_data *data,
+                                         int64_t now) {
+    if (data->timeout_ms == 0U) {
+        return TIMEOUT_CHECK_INTERVAL_MS;
+    }
+
+    const int64_t elapsed = now - data->last_motion_ms;
+    if (elapsed >= (int64_t)data->timeout_ms) {
+        return 0U;
+    }
+
+    const uint32_t remaining = data->timeout_ms - (uint32_t)elapsed;
+    return remaining < TIMEOUT_CHECK_INTERVAL_MS ? remaining
+                                                 : TIMEOUT_CHECK_INTERVAL_MS;
+}
+
+static void timeout_check_handler(struct k_work *work) {
     struct k_work_delayable *dwork = k_work_delayable_from_work(work);
     struct threshold_layer_data *data =
-        CONTAINER_OF(dwork, struct threshold_layer_data, deactivate_work);
+        CONTAINER_OF(dwork, struct threshold_layer_data, timeout_check_work);
 
     if (data->active_layer < 0) {
-        reset_pending_sequence(data);
         return;
     }
 
-    const int16_t layer = data->active_layer;
-    data->active_layer = -1;
-    data->last_timeout_refresh_ms = 0;
-    reset_pending_sequence(data);
+    const int64_t now = k_uptime_get();
+
+    if (data->timeout_ms > 0U &&
+        now - data->last_motion_ms >= (int64_t)data->timeout_ms) {
+        const int16_t layer = data->active_layer;
+
+        data->active_layer = -1;
+        data->timeout_ms = 0U;
+        data->last_motion_ms = 0;
+        reset_pending_sequence(data);
 
 #if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
-    zmk_keymap_layer_deactivate((uint8_t)layer);
+        zmk_keymap_layer_deactivate((uint8_t)layer);
 #endif
+        return;
+    }
+
+    k_work_reschedule(&data->timeout_check_work,
+                      K_MSEC(next_timeout_check_delay(data, now)));
 }
 
 static int threshold_layer_handle_event(const struct device *dev,
@@ -88,19 +117,11 @@ static int threshold_layer_handle_event(const struct device *dev,
     const int64_t now = k_uptime_get();
 
     /*
-     * While active, refresh the inactivity timeout at most once every 50 ms.
-     * This keeps the layer alive during continuous movement without doing a
-     * work cancel/reschedule operation for every X/Y input event.
+     * Hot path while active: only record the newest movement time.
+     * Timeout work is not cancelled or rescheduled from pointer events.
      */
     if (data->active_layer == layer) {
         data->last_motion_ms = now;
-
-        if (now - data->last_timeout_refresh_ms >=
-            (int64_t)TIMEOUT_REFRESH_INTERVAL_MS) {
-            data->last_timeout_refresh_ms = now;
-            k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
-        }
-
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
@@ -137,17 +158,22 @@ static int threshold_layer_handle_event(const struct device *dev,
 
     reset_pending_sequence(data);
     data->active_layer = layer;
+    data->timeout_ms = timeout_ms;
     data->last_motion_ms = now;
-    data->last_timeout_refresh_ms = now;
 
 #if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
     zmk_keymap_layer_activate(layer);
 
-    /* Initial timeout; continued movement refreshes it every 50 ms at most. */
-    k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
+    if (timeout_ms > 0U) {
+        k_work_reschedule(&data->timeout_check_work,
+                          K_MSEC(timeout_ms < TIMEOUT_CHECK_INTERVAL_MS
+                                     ? timeout_ms
+                                     : TIMEOUT_CHECK_INTERVAL_MS));
+    }
 #else
     /* Split peripherals do not link the keymap layer implementation. */
     data->active_layer = -1;
+    data->timeout_ms = 0U;
 #endif
 
     return ZMK_INPUT_PROC_CONTINUE;
@@ -168,7 +194,7 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
     };                                                                              \
     static int threshold_layer_init_##n(const struct device *dev) {                 \
         struct threshold_layer_data *data = dev->data;                              \
-        k_work_init_delayable(&data->deactivate_work, deactivate_layer);            \
+        k_work_init_delayable(&data->timeout_check_work, timeout_check_handler);     \
         return 0;                                                                    \
     }                                                                                \
     DEVICE_DT_INST_DEFINE(n, threshold_layer_init_##n, NULL,                         \
