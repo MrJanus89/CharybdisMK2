@@ -22,13 +22,13 @@
         track-remainders;
 
         /* Minimum accumulated pointer movement before activation. */
-        threshold = <256>;
+        threshold = <32>;
 
         /* Trackball movement must continue for this duration. */
-        activation-delay-ms = <100>;
+        activation-delay-ms = <0>;
 
         /* A longer event gap resets the continuous-movement timer. */
-        movement-gap-ms = <50>;
+        movement-gap-ms = <150>;
     };
 };
 
