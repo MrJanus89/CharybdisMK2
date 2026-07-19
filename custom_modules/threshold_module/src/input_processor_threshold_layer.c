@@ -18,7 +18,6 @@
 #include <zmk/keymap.h>
 
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
-#define TIMEOUT_REFRESH_INTERVAL_MS 50U
 
 struct threshold_layer_config {
     uint32_t threshold;
@@ -32,7 +31,6 @@ struct threshold_layer_data {
 
     int64_t sequence_started_ms;
     int64_t last_motion_ms;
-    int64_t last_timeout_refresh_ms;
 
     struct k_work_delayable deactivate_work;
 };
@@ -59,7 +57,6 @@ static void deactivate_layer(struct k_work *work) {
 
     const int16_t layer = data->active_layer;
     data->active_layer = -1;
-    data->last_timeout_refresh_ms = 0;
     reset_pending_sequence(data);
 
 #if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
@@ -94,13 +91,6 @@ static int threshold_layer_handle_event(const struct device *dev,
      */
     if (data->active_layer == layer) {
         data->last_motion_ms = now;
-
-        if (now - data->last_timeout_refresh_ms >=
-            (int64_t)TIMEOUT_REFRESH_INTERVAL_MS) {
-            data->last_timeout_refresh_ms = now;
-            k_work_reschedule(&data->deactivate_work, K_MSEC(timeout_ms));
-        }
-
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
