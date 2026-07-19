@@ -292,7 +292,7 @@
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans &trans &trans &trans
                 &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans &trans &trans &trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans &trans &trans &trans
-										&mo SNIPE	&mo FAST 	&trans	 	&trans &trans 
+										&mo SNIPE	&mo FAST 	&to BASE 	&trans &trans 
 													&trans 		&trans	  	&trans
             >;
         };
@@ -303,7 +303,7 @@
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans &trans &trans &trans
                 &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans &trans &trans &trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans &trans &trans &trans
-										&trans 		&trans 	 	&trans 		&trans &trans 
+										&trans 		&trans 	 	&to BASE	&trans &trans 
 													&trans 	 	&trans	 	&trans
             >;
         };
@@ -314,7 +314,7 @@
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans &trans &trans &trans
                 &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans &trans &trans &trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans &trans &trans &trans
-										&trans 		&trans 	 	&trans 		&trans &trans 
+										&trans 		&trans 	 	&to BASE	&trans &trans 
 													&trans 	 	&trans	 	&trans
             >;
         };

@@ -24,7 +24,7 @@
 #include <zmk/keymap.h>
 
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
-#define PROCESS_INTERVAL_MS 8U
+#define PROCESS_INTERVAL_MS 4U
 
 struct threshold_layer_config {
     uint32_t threshold;
