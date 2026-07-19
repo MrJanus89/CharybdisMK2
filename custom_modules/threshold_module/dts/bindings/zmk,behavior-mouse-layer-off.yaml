@@ -1,0 +1,11 @@
+description: Deactivate the configured temporary mouse layer and reset threshold processor state
+
+compatible: "zmk,behavior-mouse-layer-off"
+
+include: zero_param.yaml
+
+properties:
+  layer:
+    type: int
+    required: true
+    description: Layer index to deactivate

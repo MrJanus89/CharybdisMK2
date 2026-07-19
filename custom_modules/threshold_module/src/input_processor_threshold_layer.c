@@ -13,6 +13,7 @@
  * activation-delay, layer activation, and inactivity timeout.
  */
 #include <stdint.h>
+#include <errno.h>
 
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
@@ -177,6 +178,32 @@ static int threshold_layer_handle_event(const struct device *dev,
     return ZMK_INPUT_PROC_CONTINUE;
 }
 
+
+static struct threshold_layer_data *primary_threshold_layer_data;
+
+int zmk_threshold_layer_force_deactivate(uint8_t layer) {
+    struct threshold_layer_data *data = primary_threshold_layer_data;
+
+    if (data == NULL) {
+        return -ENODEV;
+    }
+
+    /* Drop any movement accumulated before the manual close. */
+    data->active_layer = -1;
+    data->timeout_ms = 0U;
+    data->last_motion_ms = 0U;
+    reset_sequence(data);
+    atomic_set(&data->pending_movement, 0);
+    data->last_seen_generation =
+        (uint32_t)atomic_get(&data->motion_generation);
+
+#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+    return zmk_keymap_layer_deactivate(layer);
+#else
+    return 0;
+#endif
+}
+
 static const struct zmk_input_processor_driver_api threshold_layer_api = {
     .handle_event = threshold_layer_handle_event,
 };
@@ -195,6 +222,9 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
     static int threshold_layer_init_##n(const struct device *dev) {                 \
         struct threshold_layer_data *data = dev->data;                              \
         data->config = dev->config;                                                  \
+        if (primary_threshold_layer_data == NULL) {                                  \
+            primary_threshold_layer_data = data;                                     \
+        }                                                                             \
         k_work_init_delayable(&data->process_work, process_handler);                 \
         k_work_schedule(&data->process_work, K_MSEC(PROCESS_INTERVAL_MS));           \
         return 0;                                                                    \
