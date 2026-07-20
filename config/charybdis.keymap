@@ -65,6 +65,8 @@
         layers = <MOUSE>;
         input-processors = <
             &zip_xy_scaler 1 2
+            /* Keep refreshing the inactivity timeout after MOUSE activates. */
+            &zip_threshold_layer MOUSE 5000
         >;
     };
 
@@ -73,6 +75,8 @@
         layers = <SNIPE>;
         input-processors = <
             &zip_xy_scaler 1 5
+            /* SNIPE movement also keeps the auto MOUSE layer alive. */
+            &zip_threshold_layer MOUSE 5000
         >;
     };
 
@@ -81,6 +85,8 @@
         layers = <FAST>;
         input-processors = <
             &zip_xy_scaler 1 1
+            /* FAST movement also keeps the auto MOUSE layer alive. */
+            &zip_threshold_layer MOUSE 5000
         >;
     };
 };
