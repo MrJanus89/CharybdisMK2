@@ -52,6 +52,10 @@ struct threshold_layer_data {
     uint32_t timeout_ms;
     int16_t active_layer;
 
+    /* Set by mouse_off. Blocks reactivation until the pointer has been idle. */
+    bool manual_reactivation_block;
+    uint32_t manual_block_last_motion_ms;
+
     struct k_work_delayable process_work;
 };
 
@@ -95,7 +99,11 @@ static void process_handler(struct k_work *work) {
         data->last_seen_generation = generation;
         data->last_motion_ms = now;
 
-        if (data->active_layer < 0) {
+        if (data->manual_reactivation_block) {
+            /* Ignore all residual motion after mouse_off. */
+            data->manual_block_last_motion_ms = now;
+            reset_sequence(data);
+        } else if (data->active_layer < 0) {
             if (previous_motion_ms == 0U ||
                 (config->movement_gap_ms > 0U &&
                  elapsed_ms(now, previous_motion_ms) >
@@ -110,7 +118,22 @@ static void process_handler(struct k_work *work) {
         }
     }
 
-    if (data->active_layer < 0 && data->sequence_started_ms != 0U) {
+    if (data->manual_reactivation_block) {
+        const uint32_t release_gap =
+            config->movement_gap_ms > 0U ? config->movement_gap_ms : 50U;
+
+        if (!moved && data->manual_block_last_motion_ms != 0U &&
+            elapsed_ms(now, data->manual_block_last_motion_ms) >= release_gap) {
+            data->manual_reactivation_block = false;
+            data->manual_block_last_motion_ms = 0U;
+            data->last_motion_ms = 0U;
+            reset_sequence(data);
+            atomic_set(&data->pending_movement, 0);
+        }
+    }
+
+    if (!data->manual_reactivation_block && data->active_layer < 0 &&
+        data->sequence_started_ms != 0U) {
         const bool threshold_met = data->accumulated >= config->threshold;
         const bool delay_met =
             config->activation_delay_ms == 0U ||
@@ -208,10 +231,13 @@ int zmk_threshold_layer_force_deactivate(uint8_t layer) {
         return -ENODEV;
     }
 
-    /* Drop any movement accumulated before the manual close. */
+    /* Drop accumulated movement and block immediate reactivation caused by
+     * residual events from the same physical trackball motion. */
     data->active_layer = -1;
     data->timeout_ms = 0U;
     data->last_motion_ms = 0U;
+    data->manual_reactivation_block = true;
+    data->manual_block_last_motion_ms = k_uptime_get_32();
     reset_sequence(data);
     atomic_set(&data->pending_movement, 0);
     atomic_set(&data->latest_motion_cycle, 0);
@@ -240,6 +266,8 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
         .requested_layer = ATOMIC_INIT(0),                                          \
         .requested_timeout_ms = ATOMIC_INIT(0),                                     \
         .latest_motion_cycle = ATOMIC_INIT(0),                                      \
+        .manual_reactivation_block = false,                                         \
+        .manual_block_last_motion_ms = 0U,                                           \
     };                                                                              \
     static int threshold_layer_init_##n(const struct device *dev) {                 \
         struct threshold_layer_data *data = dev->data;                              \
