@@ -25,7 +25,7 @@
 #include <zmk/keymap.h>
 
 #define DT_DRV_COMPAT zmk_input_processor_threshold_layer
-#define PROCESS_INTERVAL_MS 4U
+#define PROCESS_INTERVAL_MS 8U
 
 struct threshold_layer_config {
     uint32_t threshold;
@@ -41,6 +41,8 @@ struct threshold_layer_data {
     atomic_t motion_generation;
     atomic_t requested_layer;
     atomic_t requested_timeout_ms;
+    /* Timestamp written directly by the pointer callback for race-free timeout checks. */
+    atomic_t latest_motion_cycle;
 
     /* Owned by process_work only. */
     uint32_t last_seen_generation;
@@ -134,20 +136,37 @@ static void process_handler(struct k_work *work) {
         }
     }
 
-    if (data->active_layer >= 0 && data->timeout_ms > 0U &&
-        data->last_motion_ms != 0U &&
-        elapsed_ms(now, data->last_motion_ms) >= data->timeout_ms) {
-        const int16_t layer = data->active_layer;
+    if (data->active_layer >= 0 && data->timeout_ms > 0U) {
+        const uint32_t now_cycle = k_cycle_get_32();
+        const uint32_t motion_cycle =
+            (uint32_t)atomic_get(&data->latest_motion_cycle);
 
-        data->active_layer = -1;
-        data->timeout_ms = 0U;
-        data->last_motion_ms = 0U;
-        reset_sequence(data);
-        atomic_set(&data->pending_movement, 0);
+        if (motion_cycle != 0U &&
+            k_cyc_to_ms_floor32(now_cycle - motion_cycle) >= data->timeout_ms) {
+            /*
+             * Re-read immediately before closing. If an input event arrived
+             * during the timeout calculation, keep the layer active.
+             */
+            const uint32_t confirmed_motion_cycle =
+                (uint32_t)atomic_get(&data->latest_motion_cycle);
+
+            if (confirmed_motion_cycle == motion_cycle &&
+                k_cyc_to_ms_floor32(k_cycle_get_32() - confirmed_motion_cycle) >=
+                    data->timeout_ms) {
+                const int16_t layer = data->active_layer;
+
+                data->active_layer = -1;
+                data->timeout_ms = 0U;
+                data->last_motion_ms = 0U;
+                reset_sequence(data);
+                atomic_set(&data->pending_movement, 0);
+                atomic_set(&data->latest_motion_cycle, 0);
 
 #if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
-        zmk_keymap_layer_deactivate((uint8_t)layer);
+                zmk_keymap_layer_deactivate((uint8_t)layer);
 #endif
+            }
+        }
     }
 
     k_work_reschedule(&data->process_work, K_MSEC(PROCESS_INTERVAL_MS));
@@ -173,6 +192,7 @@ static int threshold_layer_handle_event(const struct device *dev,
     atomic_set(&data->requested_timeout_ms, (atomic_val_t)param2);
     atomic_add(&data->pending_movement,
                (atomic_val_t)movement_magnitude(event->value));
+    atomic_set(&data->latest_motion_cycle, (atomic_val_t)k_cycle_get_32());
     atomic_inc(&data->motion_generation);
 
     return ZMK_INPUT_PROC_CONTINUE;
@@ -194,6 +214,7 @@ int zmk_threshold_layer_force_deactivate(uint8_t layer) {
     data->last_motion_ms = 0U;
     reset_sequence(data);
     atomic_set(&data->pending_movement, 0);
+    atomic_set(&data->latest_motion_cycle, 0);
     data->last_seen_generation =
         (uint32_t)atomic_get(&data->motion_generation);
 
@@ -218,6 +239,7 @@ static const struct zmk_input_processor_driver_api threshold_layer_api = {
         .active_layer = -1,                                                         \
         .requested_layer = ATOMIC_INIT(0),                                          \
         .requested_timeout_ms = ATOMIC_INIT(0),                                     \
+        .latest_motion_cycle = ATOMIC_INIT(0),                                      \
     };                                                                              \
     static int threshold_layer_init_##n(const struct device *dev) {                 \
         struct threshold_layer_data *data = dev->data;                              \
