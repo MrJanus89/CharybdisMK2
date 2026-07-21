@@ -1,6 +1,7 @@
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/kernel.h>
+#include <errno.h>
 
 #include <drivers/behavior.h>
 #include <zmk/behavior.h>
@@ -15,11 +16,16 @@ extern int zmk_threshold_layer_force_deactivate(uint8_t layer);
 
 static int on_pressed(struct zmk_behavior_binding *binding,
                       struct zmk_behavior_binding_event event) {
-    const struct device *dev = device_get_binding(binding->behavior_dev);
-    const struct behavior_mouse_layer_off_config *config = dev->config;
-
+    const struct device *dev = zmk_behavior_get_binding(binding->behavior_dev);
     ARG_UNUSED(event);
-    return zmk_threshold_layer_force_deactivate(config->layer);
+
+    if (dev == NULL) {
+        return -ENODEV;
+    }
+
+    const struct behavior_mouse_layer_off_config *config = dev->config;
+    const int ret = zmk_threshold_layer_force_deactivate(config->layer);
+    return ret < 0 ? ret : ZMK_BEHAVIOR_OPAQUE;
 }
 
 static int on_released(struct zmk_behavior_binding *binding,
@@ -38,7 +44,7 @@ static const struct behavior_driver_api behavior_mouse_layer_off_driver_api = {
     static const struct behavior_mouse_layer_off_config config_##n = {            \
         .layer = DT_INST_PROP(n, layer),                                           \
     };                                                                             \
-    DEVICE_DT_INST_DEFINE(n, NULL, NULL, NULL, &config_##n, APPLICATION,           \
+    BEHAVIOR_DT_INST_DEFINE(n, NULL, NULL, NULL, &config_##n, APPLICATION,         \
                           CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,                     \
                           &behavior_mouse_layer_off_driver_api);
 
