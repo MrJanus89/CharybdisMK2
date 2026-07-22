@@ -304,8 +304,8 @@
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans &trans &trans &trans
                 &trans &trans &mkp MB1 	&mkp MB3 	&mkp MB2 	&trans  	&trans &trans &trans &trans &trans &trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans &trans &trans &trans &trans &trans
-                                        &mo SNIPE	&mo FAST 	&trans	 	&trans &trans 
-													&trans 		&mouse_off 	&trans
+                                        &trans		&mouse_off 	&trans	 	&trans &trans 
+													&mo SNIPE	&mo FAST 	&trans
             >;
         };
 
