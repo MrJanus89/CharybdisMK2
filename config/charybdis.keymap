@@ -122,7 +122,7 @@
         combo_cut {
             timeout-ms = <40>;
             require-prior-idle-ms = <125>;
-            key-positions = <37 38>;
+            key-positions = <19 20>;
             bindings = <&kp LC(X)>;
             layers = <BASE>;
 		};
@@ -130,7 +130,7 @@
         combo_copy {
             timeout-ms = <40>;
             require-prior-idle-ms = <125>;
-            key-positions = <38 39>;
+            key-positions = <31 32>;
             bindings = <&kp LC(C)>;
             layers = <BASE>;
         };
@@ -138,7 +138,7 @@
         combo_paste {
             timeout-ms = <40>;
             require-prior-idle-ms = <125>;
-            key-positions = <39 40>;
+            key-positions = <43 44>;
             bindings = <&kp LC(V)>;
             layers = <BASE>;
 		};
@@ -146,7 +146,7 @@
         combo_undo {
             timeout-ms = <40>;
             require-prior-idle-ms = <125>;
-            key-positions = <36 37>;
+            key-positions = <27 28>;
             bindings = <&kp LC(Z)>;
             layers = <BASE>;
 		};
@@ -154,7 +154,7 @@
 		combo_redo {
             timeout-ms = <40>;
             require-prior-idle-ms = <125>;
-            key-positions = <40 41>;
+            key-positions = <15 16>;
             bindings = <&kp LC(Y)>;
             layers = <BASE>;
         };
@@ -260,8 +260,8 @@
                 &trans		&kp Q  						&kp W  				  &kp E  			&kp R  					&kp T			&kp Y  				&kp U  					&kp I  					&kp O  					&kp P  						&AS PIPE BACKSLASH
                 &trans  	&HRM_L LWIN A				&HRM_L LSHIFT S		  &HRM_L LCTRL  D 	&HRM_L LALT   F			&kp G           &kp H  				&HRM_L LALT   J			&HRM_R LCTRL  K			&HRM_R LSHIFT L  		&AS COLON SEMICOLON  		&AS DOUBLE_QUOTES SQT
                 &trans		&kp Z  						&kp X  				  &kp C  			&kp V  					&kp B           &kp N  				&kp M  					&AS LESS_THAN COMMA  	&AS GREATER_THAN PERIOD	&AS QUESTION SLASH  		&kp CAPS
-																				  &TD_RAlt_RCTRL  	&lt 2 SPACE		  		&mo DIR  		&mo FUN				&AS LS(ENTER) ENTER  
-																									&mo FUN					&TD_Del_Ins  	&kp BACKSPACE
+																				  &TD_RAlt_RCTRL  	&kp SPACE		  		&TD_Del_Ins		&kp BACKSPACE		&AS LS(ENTER) ENTER  
+																									&mo DIR					&mo NUM		  	&mo FUN
             >;
         };
 
