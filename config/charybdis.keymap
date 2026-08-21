@@ -346,7 +346,7 @@
 
         MKEY_layer {
             bindings = <
-                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans 			&trans 					&trans 				&trans 				&trans &transl
+                &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans 			&trans 					&trans 				&trans 				&trans &trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans 			&msc SCRL_DOWN			&mmv MOVE_UP 		&msc SCRL_UP	 	&trans &trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans  	&trans 			&mmv MOVE_LEFT 			&mmv MOVE_DOWN	 	&mmv MOVE_RIGHT		&trans &trans
                 &trans &trans &trans 	&trans 		&trans 	 	&trans   	&trans 			&msc SCRL_LEFT			&trans		 		&msc SCRL_RIGHT 	&trans &trans
