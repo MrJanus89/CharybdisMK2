@@ -280,7 +280,7 @@
 
         num_layer {
             bindings = <
-                &trans &trans &trans &trans &trans &trans    &trans 		&trans 						&trans 						&trans &trans &trans	&trans 					&trans
+                &trans &trans &trans &trans &trans &trans    &trans 		&trans 						&trans 						&trans					&trans 					&trans
                 &trans &trans &trans &trans &trans &trans    &kp SLASH 		&AS AMPERSAND NUMBER_7 	 	&AS ASTERISK NUMBER_8		&AS LEFT_PARENTHESIS N9 &AS UNDERSCORE MINUS	&trans
                 &trans &trans &trans &trans &trans &trans    &kp ASTERISK 	&AS DOLLAR NUMBER_4 	 	&AS PERCENT N5 				&AS CARET NUMBER_6		&AS EQUAL PLUS 			&trans
                 &trans &trans &trans &trans &trans &trans    &kp LBKT		&AS EXCLAMATION NUMBER_1	&AS AT_SIGN NUMBER_2 		&AS HASH NUMBER_3		&kp RBKT				&trans
